@@ -1,0 +1,17 @@
+{
+    "auth_token": "example-auth-token",
+    "listen_addr": "127.0.0.1",
+    "listen_port": 8888,
+    "listen_socket": "/run/e5renewer/e5renewer.socket",
+    "listen_socket_permission": 666,
+    "users": [
+        {
+            "name": "e5renewer",
+            "tenant_id": "",
+            "client_id": "",
+            "secret": "",
+            "from_time": "00:00:00",
+            "to_time": "23:59:59"
+        }
+    ]
+}

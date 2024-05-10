@@ -16,30 +16,19 @@ A tool to renew e5 subscription by calling msgraph APIs
 
     Tips: We support json, yaml and toml formats, just let their contents be equal, the configuration result is same.
 
-3. Install Python
+3. Install .NET
 
-    See [here](https://www.python.org/about/gettingstarted/) for more info, we need python 3.11 and later.
+    See [here](https://learn.microsoft.com/en-us/dotnet/core/install/) for more info, we need .NET 8 and later.
 
 4. Get program
 
-    You can download prebuilt program at [Release](https://github.com/arenekosreal/e5renewer/releases) page, install the wheel by running `pip install /path/to/wheel.whl`.
-    If you want to build from source, you can follow those steps:
-    1. Install poetry
-
-        You can see [here](https://python-poetry.org/docs/) for more info.
-
-    2. Install dependencies
-
-        Run `poetry install` in the repository, if you want to make contributions, use `poetry install --with=dev` to install extra development dependencies.
-
-    3. Build wheel
-
-        Run `poetry build` in the repository, you will get wheel at `dist` folder.
+    You can download prebuilt program at [Release](https://github.com/arenekosreal/E5Renewer.Net/releases) page, simply choose which one you want, download it, unpack it and run it.
+    If you want to build from source, you can run `dotnet publish` and you will find binaries at `bin/Release/net8.0`.
+    You may want to pass `-p PublishAot=true` to generate a binary with less space usage.
 
 5. Run program
 
-    After you installed wheel, there should be a new command `e5renewer` available. Run `e5renewer -h` to see help.
-    If you want to run from source, simply run `poetry run e5renewer` in the repository.
+    Simply run `./E5Renewer` in binaries folder.
 
 ## Get running statistics
 
@@ -136,30 +125,6 @@ curl -H 'Authentication: <auth_token>' -H 'Accept: application/json' \
 
 Server will only accept request less than **30 seconds** older than server time.
 
-See [docs/API.md](./docs/API.md) for possible apis
+See [api.md](./api.md) for possible apis
 
 **Note:** This program supports **HTTP** only, and it is insecure. Please use a reverse proxy tool like `nginx` or `apache` in front of it to transfer data through untrusted environment.
-
-## References
-
-[msgraph-sdk-python](https://github.com/microsoftgraph/msgraph-sdk-python)
-
-[aiohttp](https://github.com/aio-libs/aiohttp)
-
-[pytest](https://github.com/pytest-dev/pytest)
-
-[pytest-cov](https://github.com/pytest-dev/pytest-cov)
-
-[pytest-asyncio](https://github.com/pytest-dev/pytest-asyncio)
-
-[pytest-aiohttp](https://github.com/aio-libs/pytest-aiohttp)
-
-[pytest-ruff](https://github.com/businho/pytest-ruff)
-
-[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
-
-[Kate](https://kate-editor.org/)
-
-[pyright](https://github.com/microsoft/pyright)
-
-and many other dependencies in [poetry.lock](poetry.lock)

@@ -13,9 +13,6 @@ jobs:
           - "windows-latest"
           - "ubuntu-latest"
           - "macos-latest"
-        aot:
-          - true
-          - false
     runs-on: ${{ matrix.os }}
     steps:
       - name: "Checkout"
@@ -24,21 +21,23 @@ jobs:
         uses: "actions/setup-dotnet@v4"
         with:
           dotnet-version: '8'
-      - name: "Install AoT requirements"
-        if: matrix.aot && matrix.os == 'ubuntu-latest'
-        run: |
-          sudo apt-get update -y
-          sudo apt-get upgrade -y
-          sudo apt-get install -y clang zlib1g-dev
       - name: "Publish binary"
-        run: "dotnet publish ./E5Renewer --output dist -p PublishAoT=${{ matrix.aot }}"
+        run: "dotnet publish ./E5Renewer --output dist"
+      - name: "Get build environment info"
+        id: build-env-info
+        run: |
+          # machine=x86_64
+          python -c 'import platform;print("machine={}".format(platform.machine()))' >> $GITHUB_OUTPUT
+          # system=ubuntu
+          echo system=${{ matrix.os }} | cut -d - -f 1 >> $GITHUB_OUTPUT
+        
       - name: "Create archive"
-        run: "7z a E5Renewer-${{ matrix.os }}-${{ matrix.os == 'macos-latest' && 'arm64' || 'x86_64' }}-${{ matrix.aot && 'aot' || 'noaot' }}.7z dist/*"
+        run: "7z a E5Renewer-${{ steps.build-env-info.system }}-${{ steps.build-env-info.machine }}.7z dist/*"
       - name: "Upload archive"
         uses: "actions/upload-artifact@v4"
         with:
-          name: "E5Renewer-${{ matrix.os }}-${{ matrix.os == 'macos-latest' && 'arm64' || 'x86_64' }}-${{ matrix.aot && 'aot' || 'noaot' }}"
-          path: "E5Renewer-*.7z"
+          name: "E5Renewer-${{ steps.build-env-info.system }}-${{ steps.build-env-info.machine }}"
+          path: "E5Renewer-${{ steps.build-env-info.system }}-${{ steps.build-env-info.machine }}.7z"
 
   release:
     name: "Upload release"

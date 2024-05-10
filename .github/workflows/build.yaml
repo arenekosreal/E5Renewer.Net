@@ -33,7 +33,7 @@ jobs:
       - name: "Publish binary"
         run: "dotnet publish ./E5Renewer --output dist -p PublishAoT=${{ matrix.aot }}"
       - name: "Create archive"
-        run: "7z x E5Renewer-${{ matrix.os }}-${{ matrix.os == 'macos-latest' && 'arm64' || 'x86_64' }}-${{ matrix.aot && 'aot' || 'noaot' }}.7z dist/*"
+        run: "7z a E5Renewer-${{ matrix.os }}-${{ matrix.os == 'macos-latest' && 'arm64' || 'x86_64' }}-${{ matrix.aot && 'aot' || 'noaot' }}.7z dist/*"
       - name: "Upload archive"
         uses: "actions/upload-artifact@v4"
         with:

@@ -27,9 +27,9 @@ jobs:
         id: build-env-info
         run: |
           # machine=x86_64
-          python -c 'import platform;print("machine={}".format(platform.machine()))' >> $GITHUB_OUTPUT
+          python -c 'import platform;print("machine={}".format(platform.machine()))' | tee $GITHUB_OUTPUT
           # system=ubuntu
-          echo system=${{ matrix.os }} | cut -d - -f 1 >> $GITHUB_OUTPUT
+          echo system=${{ matrix.os }} | cut -d - -f 1 | tee $GITHUB_OUTPUT
         
       - name: "Create archive"
         run: "7z a E5Renewer-${{ steps.build-env-info.system }}-${{ steps.build-env-info.machine }}.7z dist/*"

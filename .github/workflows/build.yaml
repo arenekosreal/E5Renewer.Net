@@ -27,9 +27,9 @@ jobs:
       - name: "Install AoT requirements"
         if: matrix.aot
         run: |
-          "sudo apt-get update -y"
-          "sudo apt-get upgrade -y"
-          "sudo apt-get install -y clang zlib1g-dev"
+          sudo apt-get update -y
+          sudo apt-get upgrade -y
+          sudo apt-get install -y clang zlib1g-dev
       - name: "Publish binary"
         run: "dotnet publish --output dist -p PublishAoT=${{ matrix.aot }}"
       - name: "Create archive"

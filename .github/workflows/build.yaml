@@ -31,7 +31,7 @@ jobs:
           sudo apt-get upgrade -y
           sudo apt-get install -y clang zlib1g-dev
       - name: "Publish binary"
-        run: "dotnet publish --output dist -p PublishAoT=${{ matrix.aot }}"
+        run: "dotnet publish ./E5Renewer --output dist -p PublishAoT=${{ matrix.aot }}"
       - name: "Create archive"
         run: "7z x E5Renewer-${{ matrix.os }}-x86_64-${{ matrix.aot && 'aot' || 'noaot' }}.7z dist/*"
       - name: "Create release"

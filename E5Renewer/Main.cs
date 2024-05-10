@@ -10,7 +10,7 @@ using E5Renewer.Processor;
 using E5Renewer.Statistics;
 
 Option<FileInfo?> configFile = new(
-    "--config",
+    ["--config", "-c"],
     "The config file to use."
 );
 RootCommand rootCommand = new(

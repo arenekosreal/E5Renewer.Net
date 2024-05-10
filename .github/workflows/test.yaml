@@ -1,0 +1,29 @@
+name: "Run tests"
+on:
+  push:
+    branches:
+      - "main"
+  pull_request:
+    branches:
+      - "main"
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: "Run tests"
+    strategy:
+      matrix:
+        os:
+          - "windows-latest"
+          - "ubuntu-latest"
+          - "macos-latest"
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: "Checkout"
+        uses: "actions/checkout@v4"
+      - name: "Setup python"
+        uses: "actions/setup-dotnet@v4"
+        with:
+          dotnet-version: '8'
+      - name: "Run test"
+        run: 'dotnet test --collect "XPlat Code Coverage"'

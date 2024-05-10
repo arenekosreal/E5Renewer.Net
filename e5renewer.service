@@ -1,0 +1,28 @@
+[Unit]
+Description=E5 Renewer Daemon
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+ExecStart=E5Renewer -c /etc/e5renewer/config.json
+
+User=e5renewer
+DynamicUser=yes
+
+NoNewPrivileges=yes
+
+ProtectSystem=strict
+ProtectHome=yes
+RuntimeDirectory=e5renewer
+ConfigurationDirectory=e5renewer
+PrivateDevices=yes
+PrivateNetwork=yes
+PrivateUsers=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+LockPersonality=yes
+
+[Install]
+WantedBy=multi-user.target

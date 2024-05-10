@@ -32,12 +32,12 @@ jobs:
           echo system=${{ matrix.os }} | cut -d - -f 1 | tee $GITHUB_OUTPUT
         
       - name: "Create archive"
-        run: "7z a E5Renewer-${{ steps.build-env-info.system }}-${{ steps.build-env-info.machine }}.7z dist/*"
+        run: "7z a E5Renewer-${{ steps.build-env-info.outputs.system }}-${{ steps.build-env-info.outputs.machine }}.7z dist/*"
       - name: "Upload archive"
         uses: "actions/upload-artifact@v4"
         with:
-          name: "E5Renewer-${{ steps.build-env-info.system }}-${{ steps.build-env-info.machine }}"
-          path: "E5Renewer-${{ steps.build-env-info.system }}-${{ steps.build-env-info.machine }}.7z"
+          name: "E5Renewer-${{ steps.build-env-info.outputs.system }}-${{ steps.build-env-info.outputs.machine }}"
+          path: "E5Renewer-${{ steps.build-env-info.outputs.system }}-${{ steps.build-env-info.outputs.machine }}.7z"
 
   release:
     name: "Upload release"

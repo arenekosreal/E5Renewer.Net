@@ -25,11 +25,12 @@ jobs:
         run: "dotnet publish ./E5Renewer --output dist"
       - name: "Get build environment info"
         id: build-env-info
+        shell: bash
         run: |
           # machine=x86_64
-          python -c 'import platform;print("machine={}".format(platform.machine()))' | tee "$GITHUB_OUTPUT"
+          python -c 'import platform;print("machine={}".format(platform.machine()))' | tee -a "$GITHUB_OUTPUT"
           # system=ubuntu
-          echo system=${{ matrix.os }} | cut -d - -f 1 | tee "$GITHUB_OUTPUT"
+          echo system=${{ matrix.os }} | cut -d - -f 1 | tee -a "$GITHUB_OUTPUT"
         
       - name: "Create archive"
         run: "7z a E5Renewer-${{ steps.build-env-info.outputs.system }}-${{ steps.build-env-info.outputs.machine }}.7z dist/*"

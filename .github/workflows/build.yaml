@@ -1,28 +1,41 @@
 on:
-    push:
-        tags:
-            - "v[0-9]+.[0-9]+.[0-9]+"
-    workflow_dispatch:
+  push:
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+"
+  workflow_dispatch:
 
 jobs:
-    build:
-        name: "Build packages"
-        runs-on: "ubuntu-latest"
-        steps:
-            - name: "Checkout"
-              uses: "actions/checkout@v4"
-            - name: "Setup python"
-              uses: "actions/setup-python@v5"
-              with:
-                  python-version: "3.11"
-            - name: "Setup poetry"
-              uses: "Gr1N/setup-poetry@v9"
-            - name: "Install depends"
-              run: "poetry install"
-            - name: "Build wheel"
-              run: "poetry build"
-            - name: "Create release"
-              uses: "softprops/action-gh-release@v2"
-              with:
-                  files: "dist/*"
-                  generate_release_notes: true
+  build:
+    name: "Build packages"
+    strategy:
+      matrix:
+        os:
+          - "windows-latest"
+          - "ubuntu-latest"
+          - "macos-latest"
+        aot:
+          - true
+          - false
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: "Checkout"
+        uses: "actions/checkout@v4"
+      - name: "Setup python"
+        uses: "actions/setup-dotnet@v4"
+        with:
+          dotnet-version: '8'
+      - name: "Install AoT requirements"
+        if: matrix.aot
+        run: |
+          "sudo apt-get update -y"
+          "sudo apt-get upgrade -y"
+          "sudo apt-get install -y clang zlib1g-dev"
+      - name: "Publish binary"
+        run: "dotnet publish --output dist -p PublishAoT=${{ matrix.os }}"
+      - name: "Create archive"
+        run: "7z x E5Renewer-${{ matrix.os }}-x86_64-${{ matrix.aot && 'aot' || '' }}.7z dist/*"
+      - name: "Create release"
+        uses: "softprops/action-gh-release@v2"
+        with:
+          files: "E5Renewer-*.7z"
+          generate_release_notes: true

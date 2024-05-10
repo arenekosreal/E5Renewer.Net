@@ -6,6 +6,7 @@ using E5Renewer.Config;
 
 namespace E5Renewer.Modules.APICallers
 {
+    /// <summary>A APICaller implementation which calls msgraph apis randomly.</summary>
     [Module]
     public class RandomAPICaller : IAPICaller
     {
@@ -18,12 +19,15 @@ namespace E5Renewer.Modules.APICallers
                 }
             ).SetMinimumLevel(E5Renewer.Constraints.loggingLevel)
         ).CreateLogger<RandomAPICaller>();
-        private static readonly Dictionary<string, APIHelper.APIFunction> apiFunctions = APIHelper.GetAPIFunctions();
+        private static readonly Dictionary<string, APIFunction> apiFunctions = APIHelper.GetAPIFunctions();
         private readonly Dictionary<GraphUser, GraphServiceClient> userClientsMap = new();
+        /// <inheritdoc/>
         public string name { get => "RandomAPICaller"; }
+        /// <inheritdoc/>
         public string author { get => "E5Renewer"; }
+        /// <inheritdoc/>
         public SemVer apiVersion { get => new(0, 1, 0); }
-
+        /// <inheritdoc/>
         public async Task CallNextAPI(bool update = true)
         {
             List<Task<APICallResult>> tasks = new();
@@ -32,7 +36,7 @@ namespace E5Renewer.Modules.APICallers
             {
                 int i = random.Next(apiFunctions.Count());
                 string apiName = apiFunctions.Keys.ElementAt(i);
-                APIHelper.APIFunction apiFunc = apiFunctions.Values.ElementAt(i);
+                APIFunction apiFunc = apiFunctions.Values.ElementAt(i);
                 Func<GraphUser, GraphServiceClient, Task<APICallResult>> invoke = async delegate (GraphUser user, GraphServiceClient client)
                 {
                     logger.LogDebug("Calling api {0}", apiName);
@@ -48,6 +52,7 @@ namespace E5Renewer.Modules.APICallers
             }
             await Task.WhenAll(tasks.ToArray());
         }
+        /// <inheritdoc/>
         public void AddUser(GraphUser user)
         {
             if (!userClientsMap.ContainsKey(user))

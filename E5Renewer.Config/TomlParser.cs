@@ -4,13 +4,19 @@ using E5Renewer.Config;
 
 namespace E5Renewer.Modules.ConfigParsers
 {
+    /// <summary>Toml config parser.</summary>
     [Module]
     public class TomlParser : IConfigParser
     {
+        /// <inheritdoc/>
         public string name { get => "TomlParser"; }
+        /// <inheritdoc/>
         public string author { get => "E5Renewer"; }
+        /// <inheritdoc/>
         public SemVer apiVersion { get => new(0, 1, 0); }
+        /// <inheritdoc/>
         public bool IsSupported(string path) => path.EndsWith(".toml");
+        /// <inheritdoc/>
         public async Task<RuntimeConfig> ParseConfig(string path)
         {
             RuntimeConfig runtimeConfig;

@@ -3,10 +3,14 @@ using E5Renewer.Exceptions;
 
 namespace E5Renewer.Config
 {
+    /// <summary>Utils for parsing config.</summary>
     public static class ConfigParser
     {
         private static readonly List<IConfigParser> parsers = ModulesLoader.GetRegisteredModules<IConfigParser>();
         private static RuntimeConfig? parsedConfig;
+        /// <summary>Parse config.</summary>
+        /// <param name="fileInfo">The config path in <c>FileInfo</c> object.</param>
+        /// <returns>The result of parsed config.</returns>
         public static async Task<RuntimeConfig> ParseConfig(FileInfo fileInfo)
         {
             if (ConfigParser.parsedConfig != null)

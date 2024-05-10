@@ -1,14 +1,20 @@
 namespace E5Renewer.Config
 {
+    /// <summary>The class stores info to access msgraph apis.</summary>
     public class GraphUser : ICheckable
     {
         private const uint calmDownMinMilliSeconds = 300000;
         private const uint calmDownMaxMilliSeconds = 500000;
         private readonly TimeOnly[] privateTimes = new TimeOnly[2];
+        /// <value>The name of user.</value>
         public string name { get; set; }
+        /// <value>The tenant id of user.</value>
         public string tenantId { get; set; }
+        /// <value>The client id of user.</value>
         public string clientId { get; set; }
+        /// <value>The secret of user.</value>
         public string secret { get; set; }
+        /// <value>When to start the user.</value>
         public TimeOnly fromTime
         {
             get
@@ -23,6 +29,7 @@ namespace E5Renewer.Config
                 }
             }
         }
+        /// <value>When to stop the user.</value>
         public TimeOnly toTime
         {
             get
@@ -37,7 +44,9 @@ namespace E5Renewer.Config
                 }
             }
         }
+        /// <value>Which days are allowed to start the user.</value>
         public List<DayOfWeek> days { get; set; }
+        /// <value>If the user is allowed to start.</value>
         public bool enabled
         {
             get
@@ -59,6 +68,8 @@ namespace E5Renewer.Config
                     now.CompareTo(toTime) < 0;
             }
         }
+        /// <value>Check if <c>GraphUser</c> is valid.</value>
+        /// <seealso cref="ICheckable"/>
         public bool check
         {
             get
@@ -69,6 +80,8 @@ namespace E5Renewer.Config
                     this.secret != "";
             }
         }
+        /// <value>How many milliseconds until next call.</value>
+        /// <remarks>If is allowed to start, will give the user a rest.</remarks>
         public int milliSecondsUntilNextStarting
         {
             get
@@ -103,6 +116,9 @@ namespace E5Renewer.Config
 
             }
         }
+        /// <summary>
+        /// Default constructor of <c>GraphUser</c>
+        /// </summary>
         public GraphUser()
         {
             this.name = "";

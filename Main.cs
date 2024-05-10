@@ -3,7 +3,6 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text.Json;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
-using Microsoft.AspNetCore.Mvc;
 using E5Renewer.Config;
 using E5Renewer.Modules;
 using E5Renewer.Exceptions;
@@ -54,37 +53,38 @@ async Task StartWebApplication(RuntimeConfig config)
     builder.WebHost.ConfigureKestrel(
         delegate (KestrelServerOptions serverOptions)
         {
-            try
+            const uint maxPort = 65535;
+            bool listenHttp =
+                !string.IsNullOrEmpty(config.listenAddr) &&
+                config.listenPort > 0 &&
+                config.listenPort <= maxPort;
+            if (listenHttp)
             {
                 serverOptions.Listen(
                     IPAddress.Parse(config.listenAddr),
                     (int)config.listenPort
                 );
             }
-            catch
+            else if (Socket.OSSupportsUnixDomainSockets)
             {
-                if (Socket.OSSupportsUnixDomainSockets)
-                {
-                    serverOptions.ListenUnixSocket(
-                        config.listenSocket,
-                        delegate (ListenOptions listenOptions)
+                serverOptions.ListenUnixSocket(
+                    config.listenSocket,
+                    delegate (ListenOptions listenOptions)
+                    {
+                        if (listenOptions.SocketPath != null && !OperatingSystem.IsWindows())
                         {
-                            if (listenOptions.SocketPath != null && !OperatingSystem.IsWindows())
-                            {
-                                File.SetUnixFileMode(
-                                    listenOptions.SocketPath,
-                                    Helper.ToUnixFileMode(config.listenSocketPermission)
-                                );
-                            }
+                            File.SetUnixFileMode(
+                                listenOptions.SocketPath,
+                                Helper.ToUnixFileMode(config.listenSocketPermission)
+                            );
                         }
-                    );
-                }
-                else
-                {
-                    throw new RuntimeException("Cannot Bind to HTTP or Unix Domain Socket.");
-                }
+                    }
+                );
             }
-
+            else
+            {
+                throw new RuntimeException("Cannot Bind to HTTP or Unix Domain Socket.");
+            }
         }
     );
     builder.Services.AddHostedService<GraphAPIProcessor>();
@@ -101,15 +101,10 @@ async Task StartWebApplication(RuntimeConfig config)
                 options.InvalidModelStateResponseFactory = (context) => ExceptionHandlers.GenerateExceptionResult(context).Result
         );
     WebApplication app = builder.Build();
-    app.UseExceptionHandler(
-       new ExceptionHandlerOptions()
-       {
-           ExceptionHandler = ExceptionHandlers.OnException
-       }
-    );
     app.UseRouting();
-    app.Logger.LogDebug("Setting allowed method to GET and POST");
-    app.UseHttpMethodChecker("GET", "POST");
+    string[] allowedMethods = ["GET", "POST"];
+    app.Logger.LogDebug("Setting allowed method to {0}", string.Join(", ", allowedMethods));
+    app.UseHttpMethodChecker(allowedMethods);
     app.Logger.LogDebug("Setting check Unix timestamp in request");
     app.UseUnixTimestampChecker();
     app.Logger.LogDebug("Setting authToken");

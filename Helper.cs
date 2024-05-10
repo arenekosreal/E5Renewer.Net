@@ -1,5 +1,10 @@
+/// <summary>Utils for processing.</summary>
 public static class Helper
 {
+    /// <summary>Convert unix permission to UnixFileMode.</summary>
+    /// <param name="permission">The unix permission in octal number.</param>
+    /// <returns>The converted UnixFileMode flag.</returns>
+    /// <seealso cref="UnixFileMode"/>
     public static UnixFileMode ToUnixFileMode(uint permission)
     {
         if (permission > 777)

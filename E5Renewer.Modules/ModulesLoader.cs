@@ -2,6 +2,7 @@ using System.Reflection;
 
 namespace E5Renewer.Modules
 {
+    /// <summary>Utils to load modules.</summary>
     public static class ModulesLoader
     {
         private static readonly ILogger logger = LoggerFactory.Create(
@@ -36,7 +37,7 @@ namespace E5Renewer.Modules
                             {
                                 modules.Add(module);
                                 logger.LogInformation("Loaded module {0} by {1}", module.name, module.author);
-                                if (module.IsDeprecated)
+                                if (module.isDeprecated)
                                 {
                                     logger.LogWarning("You are using a deprecated module!");
                                 }
@@ -51,6 +52,7 @@ namespace E5Renewer.Modules
             }
             return modules;
         }
+        /// <summary>Load all modules.</summary>
         public static void LoadModules()
         {
             modules.AddRange(GetModulesInAssembly<IModule>(Assembly.GetExecutingAssembly()));
@@ -61,6 +63,9 @@ namespace E5Renewer.Modules
                 modules.AddRange(GetModulesInAssembly<IModule>(Assembly.Load(Path.GetFileNameWithoutExtension(fileInfo.FullName))));
             }
         }
+        /// <summary>Get registered modules.</summary>
+        /// <returns>The modules of type <typeparamref name="T">T</typeparamref> in a <c>List</c>.</returns>
+        /// <typeparam name="T">The type to filter modules.</typeparam>
         public static List<T> GetRegisteredModules<T>()
             where T : class, IModule
         {

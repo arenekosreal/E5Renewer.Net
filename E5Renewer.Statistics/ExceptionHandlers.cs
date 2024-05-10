@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace E5Renewer.Statistics
 {
+    /// <summary>Utils to handle api request exceptions.</summary>
     public static class ExceptionHandlers
     {
         private static ILogger logger = LoggerFactory.Create(
@@ -14,8 +15,13 @@ namespace E5Renewer.Statistics
                     }
                 ).SetMinimumLevel(E5Renewer.Constraints.loggingLevel)
         ).CreateLogger(typeof(ExceptionHandlers));
+        /// <summary>Generate an exception result from ActionContext.</summary>
+        /// <seealso cref="ActionContext"/>
+        /// <returns>The exception result.</returns>
         public static async Task<ObjectResult> GenerateExceptionResult(ActionContext context) => await GenerateExceptionResult(context.HttpContext);
-
+        /// <summary>Generate an exception result from HttpContext.</summary>
+        /// <seealso cref="HttpContext"/>
+        /// <returns>The exception result.</returns>
         public static async Task<ObjectResult> GenerateExceptionResult(HttpContext context)
         {
             logger.LogWarning("Creating an empty InvokeResult to hide exceptions");
@@ -57,6 +63,5 @@ namespace E5Renewer.Statistics
                 )
             );
         }
-        public static async Task OnException(HttpContext context) => await context.Response.WriteAsJsonAsync(await GenerateExceptionResult(context));
     }
 }

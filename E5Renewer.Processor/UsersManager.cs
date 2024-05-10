@@ -2,6 +2,7 @@ using E5Renewer.Config;
 
 namespace E5Renewer.Processor
 {
+    /// <summary>Utils to record user status.</summary>
     public static class UsersManager
     {
         private static readonly List<string> waitingUsers = new();
@@ -31,7 +32,11 @@ namespace E5Renewer.Processor
                 }
             }
         }
+        /// <summary>Get running users.</summary>
+        /// <returns>The list of running users'name.</returns>
         public static List<string> GetRunningUsers() => runningUsers;
+        /// <summary>Get waiting users.</summary>
+        /// <returns>The list of waiting users' name.</returns>
         public static List<string> GetWaitingUsers() => waitingUsers;
     }
 }

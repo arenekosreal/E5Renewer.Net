@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 
 namespace E5Renewer.Processor
 {
+    /// <summary>Helper class for processing <c>APIFunction</c>.</summary>
     public static class APIHelper
     {
         private static readonly ILogger logger = LoggerFactory.Create(
@@ -17,7 +18,8 @@ namespace E5Renewer.Processor
             ).SetMinimumLevel(E5Renewer.Constraints.loggingLevel)).CreateLogger(typeof(APIHelper));
         private static readonly Dictionary<string, APIFunction> cachedFunctions = new();
         private static readonly Dictionary<Type, Dictionary<string, APIFunction>> cachedFunctionsMap = new();
-        public delegate Task<APICallResult> APIFunction(GraphServiceClient client);
+        /// <summary>Get all <c>APIFunction</c>.</summary>
+        /// <returns>All <c>APIFunction</c> with their name.</returns>
         public static Dictionary<string, APIFunction> GetAPIFunctions()
         {
             if (cachedFunctions.Count() > 0)
@@ -43,6 +45,9 @@ namespace E5Renewer.Processor
             }
             return results;
         }
+        /// <summary>Get all <c>APIFunction</c> in type given.</summary>
+        /// <param name="type">The type of class to search <c>APIFunction</c></param>
+        /// <returns>All <c>APIFunction</c> with their name.</returns>
         public static Dictionary<string, APIFunction> GetAPIFunctions(Type type)
         {
             if (cachedFunctionsMap.ContainsKey(type))

@@ -2,15 +2,21 @@ using E5Renewer.Config;
 
 namespace E5Renewer.Processor
 {
+    /// <summary> Processor class for handling msgraph apis calling.</summary>
     public class GraphAPIProcessor : BackgroundService
     {
         private readonly List<GraphUser> users;
         private readonly ILogger<GraphAPIProcessor> logger;
+        /// <summary>Initialize <c>GraphAPIProcessor</c></summary>
+        /// <param name="users">All the users to be processed.</param>
+        /// <param name="logger">The logger to create logs.</param>
+        /// <remarks>All the params are injected by Asp.Net Core runtime.</remarks>
         public GraphAPIProcessor(List<GraphUser> users, ILogger<GraphAPIProcessor> logger)
         {
             this.users = users;
             this.logger = logger;
         }
+        /// <inheritdoc/>
         protected override async Task ExecuteAsync(CancellationToken cancellationToken)
         {
 

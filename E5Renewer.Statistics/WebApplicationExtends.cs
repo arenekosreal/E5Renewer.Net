@@ -3,8 +3,13 @@ using System.Text.Json;
 
 namespace E5Renewer.Statistics
 {
+    /// <summary>Extends for WebApplication</summary>
+    /// <seealso cref="WebApplication"/>
     public static class WebApplicationExtends
     {
+        /// <summary>Use custom authentication middleware.</summary>
+        /// <param name="app">The WebApplication instance.</param>
+        /// <param name="authToken">The token used for authentication.</param>
         public static IApplicationBuilder UseAuthTokenAuthentication(this WebApplication app, string authToken)
         {
             return app.Use(
@@ -22,6 +27,9 @@ namespace E5Renewer.Statistics
                 }
             );
         }
+        /// <summary>Only allow methods given to connect.</summary>
+        /// <param name="app">The WebApplication instance.</param>
+        /// <param name="methods">The request methods to allow.</param>
         public static IApplicationBuilder UseHttpMethodChecker(this WebApplication app, params string[] methods)
         {
             return app.Use(
@@ -37,6 +45,9 @@ namespace E5Renewer.Statistics
                 }
             );
         }
+        /// <summary>Check timestamp in request.</summary>
+        /// <param name="app">The WebApplication instance.</param>
+        /// <param name="allowedMaxSeconds">Max allowed seconds.</param>
         public static IApplicationBuilder UseUnixTimestampChecker(this WebApplication app, uint allowedMaxSeconds = 30)
         {
             return app.Use(

@@ -13,6 +13,9 @@ Run `dotnet restore` in the repository to install them.
 Yes, just one step! So easy, doesn't it? Then you can do changes to this project as you like, such as fixing bugs, adding features, etc.
 Please do not forget to add some tests for your changes, this is optional but helps preventing bugs at development stage.
 
+**NOTE**: Please follow our name style.
+In a world, you need using `camelCase` for variables, using `PascalCase` for classes and Functions, using `kebab-case` for commandline arguments, and the last one, using `snake_case` for http apis and configurations.
+
 After you finish your masterpiece, don't hurry to commit and push directly, please run `dotnet test` to make sure all tests are passed.
 We have set running ruff to check code format and quality, so if theres something wrong raised by ruff, please follow outputs to fix it.
 

@@ -4,7 +4,7 @@ Wants=network-online.target
 After=network-online.target
 
 [Service]
-ExecStart=E5Renewer -c /etc/e5renewer/config.json
+ExecStart=E5Renewer -c /etc/e5renewer/config.json --systemd
 
 User=e5renewer
 DynamicUser=yes

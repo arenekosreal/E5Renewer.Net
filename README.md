@@ -125,6 +125,6 @@ curl -H 'Authentication: <auth_token>' -H 'Accept: application/json' \
 
 Server will only accept request less than **30 seconds** older than server time.
 
-See [api.md](./api.md) for possible apis
+See [http-api.md](./http-api.md) for possible apis
 
 **Note:** This program supports **HTTP** only, and it is insecure. Please use a reverse proxy tool like `nginx` or `apache` in front of it to transfer data through untrusted environment.

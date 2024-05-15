@@ -14,7 +14,7 @@ namespace E5Renewer.Models.GraphAPIs
         /// <param name="method">The method to convert.</param>
         /// <param name="id">The id of msgraph api.</param>
         /// <param name="logger">The logger to generate log.</param>
-        public static KeyValuePair<string, APIFunction> ToAPIFunction(Func<GraphServiceClient, Task<object?>> method, string id, ILogger logger)
+        public static KeyValuePair<string, APIFunction> ToAPIFunction(this Func<GraphServiceClient, Task<object?>> method, string id, ILogger logger)
         {
             return new(id,
                        async (client) =>

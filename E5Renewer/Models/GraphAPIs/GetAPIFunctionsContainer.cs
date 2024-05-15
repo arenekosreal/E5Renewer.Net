@@ -49,7 +49,7 @@ namespace E5Renewer.Models.GraphAPIs
                     Func<GraphServiceClient, Task<object?>>? func = d as Func<GraphServiceClient, Task<object?>>;
                     if (func is not null)
                     {
-                        KeyValuePair<string, APIFunction> kv = FuncExtends.ToAPIFunction(func, id, this.logger);
+                        KeyValuePair<string, APIFunction> kv = func.ToAPIFunction(id, this.logger);
                         this.cache.Add(kv);
                         yield return kv;
                     }

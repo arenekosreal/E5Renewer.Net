@@ -11,6 +11,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "E5Renewer.Modules.TomlParse
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "E5Renewer.Modules.YamlParser", "E5Renewer.Modules.YamlParser\E5Renewer.Modules.YamlParser.csproj", "{461922E6-887C-4C49-A703-EEAE9883A99E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "E5Renewer.Modules.TomlParser.Tests", "E5Renewer.Modules.TomlParser.Tests\E5Renewer.Modules.TomlParser.Tests.csproj", "{79622D22-A66D-486D-B615-7917F6234F23}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "E5Renewer.Modules.YamlParser.Tests", "E5Renewer.Modules.YamlParser.Tests\E5Renewer.Modules.YamlParser.Tests.csproj", "{088145AC-FF9F-4A20-8146-493587DF5D83}"
+EndProject
 Global
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -72,5 +76,29 @@ Global
 		{461922E6-887C-4C49-A703-EEAE9883A99E}.Release|x64.Build.0 = Release|Any CPU
 		{461922E6-887C-4C49-A703-EEAE9883A99E}.Release|x86.ActiveCfg = Release|Any CPU
 		{461922E6-887C-4C49-A703-EEAE9883A99E}.Release|x86.Build.0 = Release|Any CPU
+		{79622D22-A66D-486D-B615-7917F6234F23}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{79622D22-A66D-486D-B615-7917F6234F23}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{79622D22-A66D-486D-B615-7917F6234F23}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{79622D22-A66D-486D-B615-7917F6234F23}.Debug|x64.Build.0 = Debug|Any CPU
+		{79622D22-A66D-486D-B615-7917F6234F23}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{79622D22-A66D-486D-B615-7917F6234F23}.Debug|x86.Build.0 = Debug|Any CPU
+		{79622D22-A66D-486D-B615-7917F6234F23}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{79622D22-A66D-486D-B615-7917F6234F23}.Release|Any CPU.Build.0 = Release|Any CPU
+		{79622D22-A66D-486D-B615-7917F6234F23}.Release|x64.ActiveCfg = Release|Any CPU
+		{79622D22-A66D-486D-B615-7917F6234F23}.Release|x64.Build.0 = Release|Any CPU
+		{79622D22-A66D-486D-B615-7917F6234F23}.Release|x86.ActiveCfg = Release|Any CPU
+		{79622D22-A66D-486D-B615-7917F6234F23}.Release|x86.Build.0 = Release|Any CPU
+		{088145AC-FF9F-4A20-8146-493587DF5D83}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{088145AC-FF9F-4A20-8146-493587DF5D83}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{088145AC-FF9F-4A20-8146-493587DF5D83}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{088145AC-FF9F-4A20-8146-493587DF5D83}.Debug|x64.Build.0 = Debug|Any CPU
+		{088145AC-FF9F-4A20-8146-493587DF5D83}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{088145AC-FF9F-4A20-8146-493587DF5D83}.Debug|x86.Build.0 = Debug|Any CPU
+		{088145AC-FF9F-4A20-8146-493587DF5D83}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{088145AC-FF9F-4A20-8146-493587DF5D83}.Release|Any CPU.Build.0 = Release|Any CPU
+		{088145AC-FF9F-4A20-8146-493587DF5D83}.Release|x64.ActiveCfg = Release|Any CPU
+		{088145AC-FF9F-4A20-8146-493587DF5D83}.Release|x64.Build.0 = Release|Any CPU
+		{088145AC-FF9F-4A20-8146-493587DF5D83}.Release|x86.ActiveCfg = Release|Any CPU
+		{088145AC-FF9F-4A20-8146-493587DF5D83}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

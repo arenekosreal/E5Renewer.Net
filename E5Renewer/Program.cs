@@ -163,11 +163,23 @@ rootCommand.Handler = CommandHandler.Create<CommandLineParsedResult, IHost>(
         ).ConfigureApiBehaviorOptions(
             (options) =>
             {
-                options.InvalidModelStateResponseFactory = (actionContext) => GenerateDummyResult(actionContext.HttpContext).Result;
+                options.InvalidModelStateResponseFactory = (actionContext) =>
+                {
+                    InvokeResult result = GenerateDummyResult(actionContext.HttpContext).Result;
+                    return new JsonResult(result);
+                };
             }
         );
         WebApplication app = builder.Build();
-        app.UseExceptionHandler((exceptionHandlerApp) => exceptionHandlerApp.Run(GenerateDummyResult));
+        app.UseExceptionHandler(
+            (exceptionHandlerApp) => exceptionHandlerApp.Run(
+                async (context) =>
+                    {
+                        InvokeResult result = await GenerateDummyResult(context);
+                        await context.Response.WriteAsJsonAsync(result);
+                    }
+            )
+        );
         app.UseRouting();
         string[] allowedMethods = ["GET", "POST"];
         app.Logger.LogDebug("Setting allowed method to {0}", string.Join(", ", allowedMethods));
@@ -306,7 +318,7 @@ bool IsPortUsed(uint port)
     return false;
 }
 
-async Task<IActionResult> GenerateDummyResult(HttpContext context)
+async Task<InvokeResult> GenerateDummyResult(HttpContext context)
 {
     IUnixTimestampGenerator unixTimestampGenerator = context.RequestServices.GetRequiredService<IUnixTimestampGenerator>();
     Dictionary<string, object?> queries;
@@ -338,11 +350,10 @@ async Task<IActionResult> GenerateDummyResult(HttpContext context)
         firstOfQuote > lastOfSlash ?
             fullPath.Substring(lastOfSlash + 1, firstOfQuote - lastOfSlash) :
             fullPath.Substring(lastOfSlash + 1);
-    return new JsonResult(new InvokeResult(
+    return new InvokeResult(
             methodName,
             queries,
             null,
             unixTimestampGenerator.GetUnixTimestamp()
-        )
-    );
+        );
 }

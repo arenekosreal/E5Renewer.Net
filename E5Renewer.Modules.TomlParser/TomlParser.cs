@@ -1,5 +1,6 @@
 ﻿using System.Globalization;
 using Tomlyn;
+using CaseConverter;
 using E5Renewer.Models.Config;
 using E5Renewer.Models.Modules;
 using E5Renewer.Models;
@@ -37,20 +38,7 @@ public class TomlParser : IConfigParser
             runtimeConfig = Toml.ToModel<Config>(
                 await stream.ReadToEndAsync(), path, new()
                 {
-                    ConvertPropertyName = (input) =>
-                    {
-                        // snake_case to camelCase
-                        string[] words = input.Split("_");
-                        for (int i = 0; i < words.Count(); i++)
-                        {
-                            if (i > 0)
-                            {
-                                words[i] = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(words[i]);
-                            }
-                        }
-                        return string.Join("", words);
-
-                    }
+                    ConvertPropertyName = (input) => input.SnakeCaseToCamelCase()
                 }
             );
         }

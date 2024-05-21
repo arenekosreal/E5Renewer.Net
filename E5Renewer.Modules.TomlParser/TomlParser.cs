@@ -1,5 +1,4 @@
-﻿using System.Globalization;
-using Tomlyn;
+﻿using Tomlyn;
 using CaseConverter;
 using E5Renewer.Models.Config;
 using E5Renewer.Models.Modules;

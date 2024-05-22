@@ -1,6 +1,7 @@
-using Microsoft.AspNetCore.Mvc;
-using E5Renewer.Models.Statistics;
 using E5Renewer.Models.GraphAPIs;
+using E5Renewer.Models.Statistics;
+
+using Microsoft.AspNetCore.Mvc;
 
 namespace E5Renewer.Controllers
 {

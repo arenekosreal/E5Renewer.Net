@@ -3,9 +3,9 @@ namespace E5Renewer.Models.Statistics
     /// <summary>Manage msgraph api call result in memory.</summary>
     public class MemoryStatusManager : IStatusManager
     {
-        private List<string> runningUsers = new();
-        private List<string> waitingUsers = new();
-        private Dictionary<string, Dictionary<string, List<string>>> results = new();
+        private readonly List<string> runningUsers = new();
+        private readonly List<string> waitingUsers = new();
+        private readonly Dictionary<string, Dictionary<string, List<string>>> results = new();
 
         /// <inheritdoc/>
         public Task<IEnumerable<string>> GetRunningUsersAsync()

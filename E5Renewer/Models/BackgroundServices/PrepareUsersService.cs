@@ -50,7 +50,7 @@ namespace E5Renewer.Models.BackgroundServices
                 }
                 else
                 {
-                    await Task.Delay(user.timeToStart); ;
+                    await Task.Delay(user.timeToStart);
                 }
             }
         }

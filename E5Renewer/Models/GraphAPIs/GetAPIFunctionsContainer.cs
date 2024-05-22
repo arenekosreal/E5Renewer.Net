@@ -1,5 +1,6 @@
 using System.Reflection;
 using System.Runtime.CompilerServices;
+
 using Microsoft.Graph;
 
 namespace E5Renewer.Models.GraphAPIs

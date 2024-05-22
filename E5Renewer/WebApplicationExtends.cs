@@ -1,6 +1,8 @@
 using System.Text.Json;
-using Microsoft.Extensions.Primitives;
+
 using E5Renewer.Models.Statistics;
+
+using Microsoft.Extensions.Primitives;
 
 namespace E5Renewer
 {

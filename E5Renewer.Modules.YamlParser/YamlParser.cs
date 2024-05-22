@@ -1,8 +1,9 @@
-﻿using YamlDotNet.Serialization.NamingConventions;
-using YamlDotNet.Serialization;
+﻿using E5Renewer.Models;
 using E5Renewer.Models.Config;
 using E5Renewer.Models.Modules;
-using E5Renewer.Models;
+
+using YamlDotNet.Serialization;
+using YamlDotNet.Serialization.NamingConventions;
 
 namespace E5Renewer.Modules.YamlParser;
 

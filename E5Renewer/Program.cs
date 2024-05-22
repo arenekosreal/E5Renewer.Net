@@ -4,20 +4,22 @@ using System.CommandLine.Hosting;
 using System.CommandLine.NamingConventionBinder;
 using System.CommandLine.Parsing;
 using System.Net;
-using System.Net.Sockets;
 using System.Net.NetworkInformation;
+using System.Net.Sockets;
 using System.Reflection;
 using System.Text.Json;
-using Microsoft.AspNetCore.Mvc;
+
 using E5Renewer;
-using E5Renewer.Models;
-using E5Renewer.Models.CommandLine;
-using E5Renewer.Models.Modules;
-using E5Renewer.Models.GraphAPIs;
-using E5Renewer.Models.Config;
-using E5Renewer.Models.BackgroundServices;
-using E5Renewer.Models.Statistics;
 using E5Renewer.Controllers;
+using E5Renewer.Models;
+using E5Renewer.Models.BackgroundServices;
+using E5Renewer.Models.CommandLine;
+using E5Renewer.Models.Config;
+using E5Renewer.Models.GraphAPIs;
+using E5Renewer.Models.Modules;
+using E5Renewer.Models.Statistics;
+
+using Microsoft.AspNetCore.Mvc;
 
 const string timeStampFormat = "yyyy-MM-dd HH:mm:ss ";
 

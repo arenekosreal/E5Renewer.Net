@@ -1,8 +1,10 @@
 using Azure.Identity;
-using Microsoft.Graph;
-using E5Renewer.Models.Modules;
+
 using E5Renewer.Models.Config;
+using E5Renewer.Models.Modules;
 using E5Renewer.Models.Statistics;
+
+using Microsoft.Graph;
 
 namespace E5Renewer.Models.GraphAPIs
 {

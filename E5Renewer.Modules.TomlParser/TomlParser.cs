@@ -1,8 +1,10 @@
-﻿using Tomlyn;
-using CaseConverter;
+﻿using CaseConverter;
+
+using E5Renewer.Models;
 using E5Renewer.Models.Config;
 using E5Renewer.Models.Modules;
-using E5Renewer.Models;
+
+using Tomlyn;
 
 namespace E5Renewer.Modules.TomlParser;
 

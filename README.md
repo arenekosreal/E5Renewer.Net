@@ -24,7 +24,6 @@ A tool to renew e5 subscription by calling msgraph APIs
 
     You can download prebuilt program at [Release](https://github.com/arenekosreal/E5Renewer.Net/releases) page, simply choose which one you want, download it, unpack it and run it.
     If you want to build from source, you can run `dotnet publish` and you will find binaries at `bin/Release/net8.0`.
-    You may want to pass `-p PublishAot=true` to generate a binary with less space usage.
 
 5. Run program
 

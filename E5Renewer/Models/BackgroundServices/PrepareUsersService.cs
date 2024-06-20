@@ -50,7 +50,9 @@ namespace E5Renewer.Models.BackgroundServices
                 }
                 else
                 {
-                    await Task.Delay(user.timeToStart);
+                    TimeSpan delay = user.timeToStart;
+                    this.logger.LogDebug("Sleeping for {0} milliseconds to wait starting...", delay.TotalMilliseconds);
+                    await Task.Delay(delay, token);
                 }
             }
         }

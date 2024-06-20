@@ -69,7 +69,7 @@ namespace E5Renewer.Models.Config
                 DateTime toTime = new(today, this.toTime);
                 while (fromTime >= toTime)
                 {
-                    toTime.AddDays(1);
+                    toTime = toTime.AddDays(1);
                 }
                 if (fromTime > now)
                 {
@@ -77,14 +77,18 @@ namespace E5Renewer.Models.Config
                 }
                 if (now >= toTime)
                 {
-                    toTime.AddDays(1);
-                    return toTime - now;
+                    DateTime nextFromTime = fromTime;
+                    while (nextFromTime <= now)
+                    {
+                        nextFromTime = nextFromTime.AddDays(1);
+                    }
+                    return nextFromTime - now;
                 }
                 // this.days do not contains today
                 DateTime nowToTest = now;
                 while (!this.days.Contains(nowToTest.DayOfWeek))
                 {
-                    nowToTest.AddDays(1);
+                    nowToTest = nowToTest.AddDays(1);
                 }
                 return nowToTest - now;
             }

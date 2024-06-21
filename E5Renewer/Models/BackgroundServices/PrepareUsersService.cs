@@ -46,7 +46,7 @@ namespace E5Renewer.Models.BackgroundServices
                 if (user.enabled)
                 {
                     await apiCaller.CallNextAPIAsync(user);
-                    await apiCaller.CalmDownAsync(user);
+                    await apiCaller.CalmDownAsync(token, user);
                 }
                 else
                 {

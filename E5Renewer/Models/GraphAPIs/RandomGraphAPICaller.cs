@@ -81,7 +81,7 @@ namespace E5Renewer.Models.GraphAPIs
         }
 
         /// <inheritdoc/>
-        public async Task CalmDownAsync(GraphUser user)
+        public async Task CalmDownAsync(CancellationToken token, GraphUser user)
         {
             if (user.enabled)
             {
@@ -90,7 +90,7 @@ namespace E5Renewer.Models.GraphAPIs
                 Random random = new();
                 int milliseconds = random.Next((int)calmDownMinMilliSeconds, (int)calmDownMaxMilliSeconds);
                 this.logger.LogDebug("{0} is going to sleep for {1} millisecond(s)", user.name, milliseconds);
-                await Task.Delay(milliseconds);
+                await Task.Delay(milliseconds, token);
             }
         }
     }

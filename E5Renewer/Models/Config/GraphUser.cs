@@ -87,7 +87,8 @@ namespace E5Renewer.Models.Config
                 DateTime nowToTest = now;
                 while (!this.days.Contains(nowToTest.DayOfWeek))
                 {
-                    nowToTest = nowToTest.AddDays(1);
+                    DateOnly date = DateOnly.FromDateTime(nowToTest).AddDays(1);
+                    nowToTest = new(date, this.fromTime);
                 }
                 return nowToTest - now;
             }

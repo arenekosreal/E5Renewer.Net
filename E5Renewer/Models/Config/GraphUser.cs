@@ -112,13 +112,12 @@ namespace E5Renewer.Models.Config
 
         private DateTime GetSuitableDateTime(DateTime start, Predicate<DateTime> passCondition, Func<DateOnly, DateTime> genNextItem)
         {
-            DateTime dateTimeToTest = start;
-            while (!passCondition(dateTimeToTest))
+            while (!passCondition(start))
             {
-                DateOnly nextDay = DateOnly.FromDateTime(dateTimeToTest).AddDays(1);
-                dateTimeToTest = genNextItem(nextDay);
+                DateOnly nextDay = DateOnly.FromDateTime(start).AddDays(1);
+                start = genNextItem(nextDay);
             }
-            return dateTimeToTest;
+            return start;
         }
     }
 }

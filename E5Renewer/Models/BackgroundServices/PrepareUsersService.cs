@@ -52,8 +52,8 @@ namespace E5Renewer.Models.BackgroundServices
                 {
                     TimeSpan delay = user.timeToStart;
                     this.logger.LogDebug(
-                        "Sleeping for {0} day(s), {1} hour(s), {2} miniute(s), {3} second(s) and {4} millisecond(s) to wait starting...",
-                            delay.Days, delay.Hours, delay.Minutes, delay.Seconds, delay.Milliseconds
+                        "Sleeping for {0} day(s), {1} hour(s), {2} miniute(s), {3} second(s) and {4} millisecond(s) to wait starting user {5}...",
+                            delay.Days, delay.Hours, delay.Minutes, delay.Seconds, delay.Milliseconds, user.name
                     );
                     await Task.Delay(delay, token);
                 }

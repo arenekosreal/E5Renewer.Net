@@ -77,20 +77,18 @@ namespace E5Renewer.Models.Config
                 }
                 if (now >= toTime)
                 {
-                    while (fromTime <= now)
-                    {
-                        fromTime = fromTime.AddDays(1);
-                    }
-                    return fromTime - now;
+                    return this.GetSuitableDateTime(
+                        now,
+                        (item) => now < item,
+                        (date) => new(date, this.fromTime)
+                    ) - now;
                 }
                 // this.days do not contains today
-                DateTime nowToTest = now;
-                while (!this.days.Contains(nowToTest.DayOfWeek))
-                {
-                    DateOnly date = DateOnly.FromDateTime(nowToTest).AddDays(1);
-                    nowToTest = new(date, this.fromTime);
-                }
-                return nowToTest - now;
+                return this.GetSuitableDateTime(
+                    now,
+                    (item) => this.days.Contains(item.DayOfWeek),
+                    (date) => new(date, this.fromTime)
+                ) - now;
             }
         }
 
@@ -110,6 +108,17 @@ namespace E5Renewer.Models.Config
                 DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday,
                 DayOfWeek.Thursday, DayOfWeek.Friday
             };
+        }
+
+        private DateTime GetSuitableDateTime(DateTime start, Predicate<DateTime> passCondition, Func<DateOnly, DateTime> genNextItem)
+        {
+            DateTime dateTimeToTest = start;
+            while (!passCondition(dateTimeToTest))
+            {
+                DateOnly nextDay = DateOnly.FromDateTime(dateTimeToTest).AddDays(1);
+                dateTimeToTest = genNextItem(nextDay);
+            }
+            return dateTimeToTest;
         }
     }
 }

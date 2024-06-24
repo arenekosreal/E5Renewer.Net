@@ -80,14 +80,22 @@ namespace E5Renewer.Models.Config
                     return this.GetSuitableDateTime(
                         now,
                         (item) => now < item,
-                        (date) => new(date, this.fromTime)
+                        (date) =>
+                            new(
+                                DateOnly.FromDateTime(date).AddDays(1),
+                                this.fromTime
+                            )
                     ) - now;
                 }
                 // this.days do not contains today
                 return this.GetSuitableDateTime(
                     now,
                     (item) => this.days.Contains(item.DayOfWeek),
-                    (date) => new(date, this.fromTime)
+                    (date) =>
+                        new(
+                            DateOnly.FromDateTime(date).AddDays(1),
+                            this.fromTime
+                        )
                 ) - now;
             }
         }
@@ -110,12 +118,11 @@ namespace E5Renewer.Models.Config
             };
         }
 
-        private DateTime GetSuitableDateTime(DateTime start, Predicate<DateTime> passCondition, Func<DateOnly, DateTime> genNextItem)
+        private DateTime GetSuitableDateTime(DateTime start, Predicate<DateTime> passCondition, Func<DateTime, DateTime> genNextItem)
         {
             while (!passCondition(start))
             {
-                DateOnly nextDay = DateOnly.FromDateTime(start).AddDays(1);
-                start = genNextItem(nextDay);
+                start = genNextItem(start);
             }
             return start;
         }

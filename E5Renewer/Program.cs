@@ -127,8 +127,13 @@ rootCommand.Handler = CommandHandler.Create<CommandLineParsedResult, IHost>(
         );
         if (config.isCheckPassed)
         {
+            if (config.passwords is not null)
+            {
+                builder.Services.AddSingleton(config.passwords);
+            }
             builder.Services.AddSingleton<IStatusManager, MemoryStatusManager>();
             builder.Services.AddSingleton<IUnixTimestampGenerator, UnixTimestampGenerator>();
+            builder.Services.AddSingleton<ICertificatePasswordProvider, ConfigCertificatePasswordProvider>();
             builder.Services.AddHostedService<PrepareUsersService>();
             builder.Services.AddHostedService<ModulesCheckerService>();
             foreach (IModulesChecker checker in modulesCheckers)

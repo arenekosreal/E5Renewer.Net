@@ -16,6 +16,9 @@ namespace E5Renewer.Models.Config
         /// <value>The secret of user.</value>
         public string secret { get; set; }
 
+        /// <value>The path to certificate of user.</value>
+        public string certificate { get; set; }
+
         /// <value>When to start the user.</value>
         public TimeOnly fromTime { get; set; }
 
@@ -30,8 +33,8 @@ namespace E5Renewer.Models.Config
         {
             get
             {
-                string[] items = [this.name, this.tenantId, this.clientId, this.secret];
-                return items.All((item) => !string.IsNullOrEmpty(item));
+                string[] items = [this.name, this.tenantId, this.clientId];
+                return items.All((item) => !string.IsNullOrEmpty(item)) && this.IsCertificateOrSecretValid();
             }
         }
 
@@ -109,6 +112,7 @@ namespace E5Renewer.Models.Config
             this.tenantId = "";
             this.clientId = "";
             this.secret = "";
+            this.certificate = "";
             this.fromTime = new(8, 0);
             this.toTime = new(16, 0);
             this.days = new()
@@ -125,6 +129,11 @@ namespace E5Renewer.Models.Config
                 start = genNextItem(start);
             }
             return start;
+        }
+
+        private bool IsCertificateOrSecretValid()
+        {
+            return File.Exists(this.certificate) || !string.IsNullOrEmpty(this.secret);
         }
     }
 }

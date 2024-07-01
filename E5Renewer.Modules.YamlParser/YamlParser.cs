@@ -1,4 +1,4 @@
-﻿using E5Renewer.Models;
+using E5Renewer.Models;
 using E5Renewer.Models.Config;
 using E5Renewer.Models.Modules;
 

@@ -13,26 +13,33 @@ namespace E5Renewer.Models.BackgroundServices
         private readonly ILogger<PrepareUsersService> logger;
         private readonly IEnumerable<GraphUser> users;
         private readonly IServiceProvider serviceProvider;
+        private readonly IStatusManager statusManager;
 
         /// <summary>Initialize <c>PrepareUsersService</c> with parameters.</summary>
         /// <param name="logger">The logger to create log.</param>
         /// <param name="users">The <see cref="GraphUser">GraphUser</see>s to process.</param>
         /// <param name="serviceProvider">The <see cref="IServiceProvider">IServiceProvider</see> implementation.</param>
+        /// <param name="statusManager">The <see cref="IStatusManager">IStatusManager</see> implementation.</param>
         /// <remarks>All parameters should be injected by AspNet.Core.</remarks>
-        public PrepareUsersService(ILogger<PrepareUsersService> logger, IEnumerable<GraphUser> users, IServiceProvider serviceProvider)
+        public PrepareUsersService(
+            ILogger<PrepareUsersService> logger,
+            IEnumerable<GraphUser> users,
+            IServiceProvider serviceProvider,
+            IStatusManager statusManager
+        )
         {
             this.logger = logger;
             this.users = users;
             this.serviceProvider = serviceProvider;
+            this.statusManager = statusManager;
         }
 
         /// <inheritdoc/>
         protected override async Task ExecuteAsync(CancellationToken token)
         {
-            IStatusManager statusManager = this.serviceProvider.GetRequiredService<IStatusManager>();
             foreach (GraphUser user in this.users)
             {
-                await this.DoAPICallForUser(token, user, statusManager);
+                await this.DoAPICallForUser(token, user, this.statusManager);
             }
 
         }

@@ -34,6 +34,9 @@ namespace E5Renewer.Models.Config
         /// to access msgraph apis.</value>
         public List<GraphUser> users { get; set; }
 
+        /// <value>The map of passwords for certificate.</value>
+        public Dictionary<string, string?>? passwords { get; set; }
+
         /// <inheritdoc/>
         public bool isCheckPassed
         {

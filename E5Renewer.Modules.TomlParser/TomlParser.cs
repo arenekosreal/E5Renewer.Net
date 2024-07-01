@@ -1,4 +1,4 @@
-﻿using CaseConverter;
+using CaseConverter;
 
 using E5Renewer.Models;
 using E5Renewer.Models.Config;

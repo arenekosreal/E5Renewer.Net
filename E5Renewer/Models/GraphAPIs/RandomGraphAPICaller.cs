@@ -1,3 +1,6 @@
+using System.Security.Cryptography.X509Certificates;
+
+using Azure.Core;
 using Azure.Identity;
 
 using E5Renewer.Models.Config;
@@ -18,22 +21,26 @@ namespace E5Renewer.Models.GraphAPIs
         private readonly ILogger<RandomGraphAPICaller> logger;
         private readonly IEnumerable<IAPIFunctionsContainer> apiFunctions;
         private readonly IStatusManager statusManager;
+        private readonly ICertificatePasswordProvider certificatePasswordProvider;
         private readonly Dictionary<GraphUser, GraphServiceClient> clients = new();
 
         /// <summary>Initialize <c>RandomGraphAPICaller</c> with parameters given.</summary>
         /// <param name="logger">The logger to generate log.</param>
         /// <param name="apiFunctions">All known api functions with their id.</param>
         /// <param name="statusManager"><see cref="IStatusManager">IStatusManager</see> implementation.</param>
+        /// <param name="certificatePasswordProvider"><see cref="ICertificatePasswordProvider">ICertificatePasswordProvider</see> implementation.</param>
         /// <remarks>All parameters should be injected by Asp.Net Core.</remarks>
         public RandomGraphAPICaller(
             ILogger<RandomGraphAPICaller> logger,
             IEnumerable<IAPIFunctionsContainer> apiFunctions,
-            IStatusManager statusManager
+            IStatusManager statusManager,
+            ICertificatePasswordProvider certificatePasswordProvider
         )
         {
             this.logger = logger;
             this.apiFunctions = apiFunctions;
             this.statusManager = statusManager;
+            this.certificatePasswordProvider = certificatePasswordProvider;
         }
 
         /// <inheritdoc/>
@@ -57,7 +64,19 @@ namespace E5Renewer.Models.GraphAPIs
                 {
                     AuthorityHost = AzureAuthorityHosts.AzurePublicCloud
                 };
-                ClientSecretCredential credential = new(user.tenantId, user.clientId, user.secret, options);
+                TokenCredential credential;
+                if (File.Exists(user.certificate))
+                {
+                    this.logger.LogDebug("Using certificate to get user token.");
+                    string? password = await this.certificatePasswordProvider.GetPasswordForCertificateAsync(user.certificate);
+                    X509Certificate2 certificate = new(user.certificate, password);
+                    credential = new ClientCertificateCredential(user.tenantId, user.clientId, certificate, options);
+                }
+                else
+                {
+                    this.logger.LogDebug("Using secret to get user token.");
+                    credential = new ClientSecretCredential(user.tenantId, user.clientId, user.secret, options);
+                }
                 GraphServiceClient client = new(credential, ["https://graph.microsoft.com/.default"]);
                 this.clients[user] = client;
             }

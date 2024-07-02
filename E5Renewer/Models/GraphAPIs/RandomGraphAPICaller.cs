@@ -69,6 +69,10 @@ namespace E5Renewer.Models.GraphAPIs
                 {
                     this.logger.LogDebug("Using certificate to get user token.");
                     string? password = await this.certificatePasswordProvider.GetPasswordForCertificateAsync(user.certificate);
+                    if (password is not null)
+                    {
+                        this.logger.LogDebug("Found password for certificate given.");
+                    }
                     X509Certificate2 certificate = new(user.certificate, password);
                     credential = new ClientCertificateCredential(user.tenantId, user.clientId, certificate, options);
                 }

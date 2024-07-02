@@ -9,10 +9,26 @@ A tool to renew e5 subscription by calling msgraph APIs
 
     See [Register Application](https://learn.microsoft.com/graph/auth-register-app-v2) and [Configure Permissions](https://learn.microsoft.com/graph/auth-v2-service#2-configure-permissions-for-microsoft-graph) for more info. We need `tenant id`, `client id` and `client secret` of your application to access msgraph APIs.
 
+    Tips for people who like certificate instead secret:
+        - If you add certificate after created application and added secret, the `client_id` may be changed so please update it.
+        - Using pfx format to this tool is tested. But you only need to upload public key part(*.crt) to Azure.
+        - If your certificate has a password, you can create a `passwords` key in config like this:
+           ```json
+           {
+               "passwords": {
+                   "<sha512sum>": "<password>"
+               }
+           }
+           ```
+           `<sha512sum>` is the sha512 sum of the certificate file in lower case and `<password>` is its password in **plain**, please keep the configuration in secret to avoid someone using your certificate without being permitted.
+
 2. Create Configuration
 
     Copy [`config.json.example`](./config.json.example) to `config.json`, edit it as your need. You can always add more credentials. Please edit `auth_token` so only people you authenticated can access the statistics.
+
     We will listen on tcp socket by default, if `listen_addr` is an empty string and your platform supports Unix domain socket, we will listen on Unix domain socket with path `listen_socket` and permission `listen_socket_permission`.
+
+    If you want to use certificate instead secret, which is better for security, you can write a `certificate` key with path to your certificate file instead `secret` key.
 
     Tips: We support json, yaml and toml formats, just let their contents be equal, the configuration result is same.
 

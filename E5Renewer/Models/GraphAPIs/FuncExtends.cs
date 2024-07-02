@@ -28,7 +28,7 @@ namespace E5Renewer.Models.GraphAPIs
                         }
                         catch (ODataError ode)
                         {
-                            logger.LogError("Failed to send request because {0}", ode.Message);
+                            logger.LogError("Failed to send request because \"{0}\"", ode.Message);
                             return new APICallResult(
                                 ode.ResponseStatusCode,
                                 ode.Error?.Code ?? "ERROR"
@@ -36,7 +36,7 @@ namespace E5Renewer.Models.GraphAPIs
                         }
                         catch (Exception ex)
                         {
-                            logger.LogError("Failed to call msgraph api because {0}", ex.Message);
+                            logger.LogError("Failed to call msgraph api because \"{0}\"", ex.Message);
                             return APICallResult.errorResult;
                         }
                     }

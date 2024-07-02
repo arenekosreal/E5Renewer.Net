@@ -21,26 +21,26 @@ namespace E5Renewer.Models.GraphAPIs
         private readonly ILogger<RandomGraphAPICaller> logger;
         private readonly IEnumerable<IAPIFunctionsContainer> apiFunctions;
         private readonly IStatusManager statusManager;
-        private readonly ICertificatePasswordProvider certificatePasswordProvider;
+        private readonly IEnumerable<ICertificatePasswordProvider> certificatePasswordProviders;
         private readonly Dictionary<GraphUser, GraphServiceClient> clients = new();
 
         /// <summary>Initialize <c>RandomGraphAPICaller</c> with parameters given.</summary>
         /// <param name="logger">The logger to generate log.</param>
         /// <param name="apiFunctions">All known api functions with their id.</param>
         /// <param name="statusManager"><see cref="IStatusManager">IStatusManager</see> implementation.</param>
-        /// <param name="certificatePasswordProvider"><see cref="ICertificatePasswordProvider">ICertificatePasswordProvider</see> implementation.</param>
+        /// <param name="certificatePasswordProviders"><see cref="ICertificatePasswordProvider">ICertificatePasswordProvider</see> implementations.</param>
         /// <remarks>All parameters should be injected by Asp.Net Core.</remarks>
         public RandomGraphAPICaller(
             ILogger<RandomGraphAPICaller> logger,
             IEnumerable<IAPIFunctionsContainer> apiFunctions,
             IStatusManager statusManager,
-            ICertificatePasswordProvider certificatePasswordProvider
+            IEnumerable<ICertificatePasswordProvider> certificatePasswordProviders
         )
         {
             this.logger = logger;
             this.apiFunctions = apiFunctions;
             this.statusManager = statusManager;
-            this.certificatePasswordProvider = certificatePasswordProvider;
+            this.certificatePasswordProviders = certificatePasswordProviders;
         }
 
         /// <inheritdoc/>
@@ -68,7 +68,15 @@ namespace E5Renewer.Models.GraphAPIs
                 if (File.Exists(user.certificate))
                 {
                     this.logger.LogDebug("Using certificate to get user token.");
-                    string? password = await this.certificatePasswordProvider.GetPasswordForCertificateAsync(user.certificate);
+                    string? password = null;
+                    foreach (ICertificatePasswordProvider provider in this.certificatePasswordProviders)
+                    {
+                        password = await provider.GetPasswordForCertificateAsync(user.certificate);
+                        if (password is not null)
+                        {
+                            break;
+                        }
+                    }
                     if (password is not null)
                     {
                         this.logger.LogDebug("Found password for certificate given.");

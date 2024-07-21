@@ -12,25 +12,25 @@ namespace E5Renewer.Controllers
     {
         private readonly ILogger<JsonAPIV1Controller> logger;
         private readonly IStatusManager statusManager;
-        private readonly IEnumerable<IAPIFunctionsContainer> apiFunctionsContainers;
+        private readonly IEnumerable<IAPIFunction> apiFunctions;
         private readonly IUnixTimestampGenerator unixTimestampGenerator;
 
         /// <summary>Initialize controller by logger given.</summary>
         /// <param name="logger">The logger to create logs.</param>
-        /// <param name="statusManager">The <see cref="IStatusManager">IStatusManager</see> implementation.</param>
-        /// <param name="apiFunctionsContainers">The <see cref="IAPIFunctionsContainer">IAPIFunctionsContainer</see> implementation.</param>
-        /// <param name="unixTimestampGenerator">The <see cref="IUnixTimestampGenerator">IUnixTimestampGenerator</see> implementation.</param>
+        /// <param name="statusManager">The <see cref="IStatusManager"/> implementation.</param>
+        /// <param name="apiFunctions">The <see cref="IAPIFunction"/> implementation.</param>
+        /// <param name="unixTimestampGenerator">The <see cref="IUnixTimestampGenerator"/> implementation.</param>
         /// <remarks>All the params are injected by Asp.Net Core runtime.</remarks>
         public JsonAPIV1Controller(
             ILogger<JsonAPIV1Controller> logger,
             IStatusManager statusManager,
-            IEnumerable<IAPIFunctionsContainer> apiFunctionsContainers,
+            IEnumerable<IAPIFunction> apiFunctions,
             IUnixTimestampGenerator unixTimestampGenerator
         )
         {
             this.logger = logger;
             this.statusManager = statusManager;
-            this.apiFunctionsContainers = apiFunctionsContainers;
+            this.apiFunctions = apiFunctions;
             this.unixTimestampGenerator = unixTimestampGenerator;
         }
 
@@ -38,10 +38,8 @@ namespace E5Renewer.Controllers
         [HttpGet("list_apis")]
         public Task<InvokeResult> GetListApis()
         {
-            IEnumerable<string> result = this.apiFunctionsContainers.
-                Select((c) => c.GetAPIFunctions()).
-                SelectMany((c) => c).
-                Select((kv) => kv.Key);
+            IEnumerable<string> result = this.apiFunctions.
+                Select((c) => c.id);
             logger.LogDebug("Getting result [{0}]", string.Join(", ", result));
             return Task.FromResult(new InvokeResult(
                 "list_apis",

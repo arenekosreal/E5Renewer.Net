@@ -19,7 +19,7 @@ namespace E5Renewer.Models.GraphAPIs
     public class RandomGraphAPICaller : IGraphAPICaller
     {
         private readonly ILogger<RandomGraphAPICaller> logger;
-        private readonly IEnumerable<IAPIFunctionsContainer> apiFunctions;
+        private readonly IEnumerable<IAPIFunction> apiFunctions;
         private readonly IStatusManager statusManager;
         private readonly IEnumerable<ICertificatePasswordProvider> certificatePasswordProviders;
         private readonly Dictionary<GraphUser, GraphServiceClient> clients = new();
@@ -32,7 +32,7 @@ namespace E5Renewer.Models.GraphAPIs
         /// <remarks>All parameters should be injected by Asp.Net Core.</remarks>
         public RandomGraphAPICaller(
             ILogger<RandomGraphAPICaller> logger,
-            IEnumerable<IAPIFunctionsContainer> apiFunctions,
+            IEnumerable<IAPIFunction> apiFunctions,
             IStatusManager statusManager,
             IEnumerable<ICertificatePasswordProvider> certificatePasswordProviders
         )
@@ -41,6 +41,7 @@ namespace E5Renewer.Models.GraphAPIs
             this.apiFunctions = apiFunctions;
             this.statusManager = statusManager;
             this.certificatePasswordProviders = certificatePasswordProviders;
+            this.logger.LogDebug("Found {0} api functions", this.apiFunctions.Count());
         }
 
         /// <inheritdoc/>
@@ -92,23 +93,17 @@ namespace E5Renewer.Models.GraphAPIs
                 GraphServiceClient client = new(credential, ["https://graph.microsoft.com/.default"]);
                 this.clients[user] = client;
             }
-            Random random = new();
+
             if (this.apiFunctions.Count() <= 0)
             {
-                this.logger.LogError("No IAPIFunctionsContainer is found.");
+                this.logger.LogError("No {0} is found.", nameof(IAPIFunction));
                 return;
             }
-            IAPIFunctionsContainer container = random.GetItems(this.apiFunctions.ToArray(), 1)[0];
-            this.logger.LogDebug("Using IAPIFunctionsContainer {0}", container.GetType().Name);
-            IEnumerable<KeyValuePair<string, APIFunction>> apiFunctions = container.GetAPIFunctions();
-            if (apiFunctions.Count() <= 0)
-            {
-                this.logger.LogError("No KeyValuePair<string, APIFunction> is found.");
-                return;
-            }
-            KeyValuePair<string, APIFunction> apiFunction = random.GetItems(apiFunctions.ToArray(), 1)[0];
-            APICallResult result = await apiFunction.Value(this.clients[user]);
-            await this.statusManager.SetResultAsync(user.name, apiFunction.Key, result.ToString());
+
+            Random random = new();
+            IAPIFunction apiFunction = random.GetItems(this.apiFunctions.ToArray(), 1)[0];
+            APICallResult result = await apiFunction.SafeCallAsync(this.clients[user], user.name);
+            await this.statusManager.SetResultAsync(user.name, apiFunction.id, result.ToString());
         }
 
         /// <inheritdoc/>
@@ -124,5 +119,6 @@ namespace E5Renewer.Models.GraphAPIs
                 await Task.Delay(milliseconds, token);
             }
         }
+
     }
 }

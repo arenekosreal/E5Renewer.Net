@@ -153,11 +153,11 @@ rootCommand.Handler = CommandHandler.Create<CommandLineParsedResult, IHost>(
             {
                 builder.Services.AddSingleton(typeof(IAspNetModule), t);
             }
-            IEnumerable<Type> apiFunctionsContainerTypes = Assembly.GetExecutingAssembly().GetTypes().GetNonAbstractClassesAssainableTo<IAPIFunctionsContainer>();
-            foreach (Type t in apiFunctionsContainerTypes)
+            IEnumerable<Type> apiFunctionsTypes = Assembly.GetExecutingAssembly().GetTypes().GetNonAbstractClassesAssainableTo<IAPIFunction>();
+            foreach (Type t in apiFunctionsTypes)
             {
-                logger.LogDebug("Registering {0} as {1}", t.Name, nameof(IAPIFunctionsContainer));
-                builder.Services.AddSingleton(typeof(IAPIFunctionsContainer), t);
+                logger.LogDebug("Registering {0} as {1}", t.Name, nameof(IAPIFunction));
+                builder.Services.AddSingleton(typeof(IAPIFunction), t);
             }
         }
 

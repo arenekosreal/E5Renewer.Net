@@ -100,8 +100,14 @@ namespace E5Renewer.Models.GraphAPIs
                 return;
             }
 
-            Random random = new();
-            IAPIFunction apiFunction = random.GetItems(this.apiFunctions.ToArray(), 1)[0];
+
+            string successAPICallResult = new APICallResult().ToString();
+            int GetFunctionSuccessCountOfCurrentUser(IAPIFunction function)
+            {
+                IEnumerable<string> results = this.statusManager.GetResultsAsync(user.name, function.id).Result;
+                return results.Count((item) => item == successAPICallResult);
+            }
+            IAPIFunction apiFunction = this.apiFunctions.GetDifferentItemsByWeight(GetFunctionSuccessCountOfCurrentUser, 1).First();
             APICallResult result = await apiFunction.SafeCallAsync(this.clients[user], user.name);
             await this.statusManager.SetResultAsync(user.name, apiFunction.id, result.ToString());
         }

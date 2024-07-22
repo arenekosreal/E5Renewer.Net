@@ -102,12 +102,13 @@ namespace E5Renewer.Models.GraphAPIs
 
 
             string successAPICallResult = new APICallResult().ToString();
-            int GetFunctionSuccessCountOfCurrentUser(IAPIFunction function)
+            int GetFunctionWeightOfCurrentUser(IAPIFunction function)
             {
                 IEnumerable<string> results = this.statusManager.GetResultsAsync(user.name, function.id).Result;
-                return results.Count((item) => item == successAPICallResult);
+                int successCount = results.Count((item) => item == successAPICallResult);
+                return successCount > 0 ? successCount : 1;
             }
-            IAPIFunction apiFunction = this.apiFunctions.GetDifferentItemsByWeight(GetFunctionSuccessCountOfCurrentUser, 1).First();
+            IAPIFunction apiFunction = this.apiFunctions.GetDifferentItemsByWeight(GetFunctionWeightOfCurrentUser, 1).First();
             APICallResult result = await apiFunction.SafeCallAsync(this.clients[user], user.name);
             await this.statusManager.SetResultAsync(user.name, apiFunction.id, result.ToString());
         }

@@ -18,7 +18,7 @@ namespace E5Renewer.Models.GraphAPIs
             for (int i = 0; i < count; i++)
             {
                 int nextWeight = random.Next(0, items.Sum(weightGenerator));
-                T selectedItem = items.First((item) => nextWeight < weightGenerator(item));
+                T selectedItem = items.First((item) => nextWeight < items.GetRange(0, items.IndexOf(item) + 1).Sum(weightGenerator));
                 yield return selectedItem;
                 items.Remove(selectedItem);
             }

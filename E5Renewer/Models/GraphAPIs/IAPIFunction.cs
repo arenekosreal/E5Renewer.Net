@@ -27,7 +27,7 @@ namespace E5Renewer.Models.GraphAPIs
         internal async Task<APICallResult> SafeCallAsync(GraphServiceClient client, string user)
         {
             object? resultRaw;
-            this.logger.LogInformation("Calling {0} for user {1}", this.id, user);
+            this.logger.LogInformation("Calling for user {0}", user);
             try
             {
                 resultRaw = await this.CallAsync(client);

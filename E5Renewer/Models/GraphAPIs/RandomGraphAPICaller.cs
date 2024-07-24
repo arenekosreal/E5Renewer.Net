@@ -106,7 +106,7 @@ namespace E5Renewer.Models.GraphAPIs
                 string successAPICallResult = new APICallResult().ToString();
                 IEnumerable<string> results = this.statusManager.GetResultsAsync(user.name, function.id).Result;
                 int successCount = results.Count((item) => item == successAPICallResult);
-                return successCount > 0 ? successCount : 1;
+                return successCount + 1; // let weight greater than zero
             }
 
             IAPIFunction apiFunction = this.apiFunctions.GetDifferentItemsByWeight(GetFunctionWeightOfCurrentUser, 1).First();

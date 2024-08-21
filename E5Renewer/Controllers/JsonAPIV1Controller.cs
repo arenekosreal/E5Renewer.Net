@@ -36,12 +36,12 @@ namespace E5Renewer.Controllers
 
         /// <summary>Handler for <c>/v1/list_apis</c>.</summary>
         [HttpGet("list_apis")]
-        public Task<InvokeResult> GetListApis()
+        public ValueTask<InvokeResult> GetListApis()
         {
             IEnumerable<string> result = this.apiFunctions.
                 Select((c) => c.id);
             logger.LogDebug("Getting result [{0}]", string.Join(", ", result));
-            return Task.FromResult(new InvokeResult(
+            return ValueTask.FromResult(new InvokeResult(
                 "list_apis",
                 new(),
                 result,
@@ -51,7 +51,7 @@ namespace E5Renewer.Controllers
 
         /// <summary>Handler for <c>/v1/running_users</c>.</summary>
         [HttpGet("running_users")]
-        public async Task<InvokeResult> GetRunningUsers()
+        public async ValueTask<InvokeResult> GetRunningUsers()
         {
             IEnumerable<string> result = await this.statusManager.GetRunningUsersAsync();
             logger.LogDebug("Getting result [{0}]", string.Join(", ", result));
@@ -65,7 +65,7 @@ namespace E5Renewer.Controllers
 
         /// <summary>Handler for <c>/v1/waiting_users</c>.</summary>
         [HttpGet("waiting_users")]
-        public async Task<InvokeResult> GetWaitingUsers()
+        public async ValueTask<InvokeResult> GetWaitingUsers()
         {
             IEnumerable<string> result = await this.statusManager.GetWaitingUsersAsync();
             logger.LogDebug("Getting result [{0}]", string.Join(", ", result));
@@ -79,7 +79,7 @@ namespace E5Renewer.Controllers
 
         /// <summary>Handler for <c>/v1/user_results</c>.</summary>
         [HttpGet("user_results")]
-        public async Task<InvokeResult> GetUserResults(
+        public async ValueTask<InvokeResult> GetUserResults(
             [FromQuery(Name = "user")]
             string userName,
 

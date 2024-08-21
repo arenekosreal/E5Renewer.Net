@@ -24,7 +24,7 @@ namespace E5Renewer.Models.Config
         public bool IsSupported(string path) => path.EndsWith(".json");
 
         /// <inheritdoc/>
-        public async Task<Config> ParseConfigAsync(string path)
+        public async ValueTask<Config> ParseConfigAsync(string path)
         {
             JsonSerializerOptions options = new()
             {

@@ -19,12 +19,12 @@ namespace E5Renewer.Models.Config
         /// <summary>Parse config.</summary>
         /// <param name="path">The path to the config.</param>
         /// <returns>Parsed result.</returns>
-        public Task<Config> ParseConfigAsync(string path);
+        public ValueTask<Config> ParseConfigAsync(string path);
 
         /// <summary>Parse config.</summary>
         /// <param name="fileInfo">The <see cref="FileInfo">FileInfo</see> to the config.</param>
         /// <returns>Parsed result.</returns>
-        public async Task<Config> ParseConfigAsync(FileInfo fileInfo)
+        public async ValueTask<Config> ParseConfigAsync(FileInfo fileInfo)
         {
             return await this.ParseConfigAsync(fileInfo.FullName);
         }

@@ -30,7 +30,7 @@ public class YamlParser : IConfigParser
     public bool IsSupported(string path) => path.EndsWith(".yaml") || path.EndsWith(".yml");
 
     /// <inheritdoc/>
-    public async Task<Config> ParseConfigAsync(string path)
+    public async ValueTask<Config> ParseConfigAsync(string path)
     {
         Config runtimeConfig;
         using (StreamReader stream = File.OpenText(path))

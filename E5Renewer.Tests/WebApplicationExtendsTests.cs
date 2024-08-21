@@ -15,7 +15,7 @@ namespace E5Renewer.Tests;
 [TestClass]
 public class WebApplicationExtendsTests
 {
-    private static readonly Uri baseAddress = new ("http://localhost:65530/");
+    private static readonly Uri baseAddress = new("http://localhost:65530/");
     /// <summary>Test
     /// <see cref="WebApplicationExtends.UseAuthTokenAuthentication(Microsoft.AspNetCore.Builder.WebApplication, string)"/>
     /// </summary>

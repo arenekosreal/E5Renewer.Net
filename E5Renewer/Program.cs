@@ -263,7 +263,7 @@ IEnumerable<DirectoryInfo> GetPossibleModulesPaths()
     const string modulesBaseFolderName = "modules";
     const string modulesBaseFileName = "E5Renewer.Modules.*.dll";
     Dictionary<string, IEnumerable<DirectoryInfo>> results = new();
-    DirectoryInfo assemblyDirectory = new(Path.Combine(Environment.CurrentDirectory, modulesBaseFolderName));
+    DirectoryInfo assemblyDirectory = new(Path.Combine(AppContext.BaseDirectory, modulesBaseFolderName));
     DirectoryInfo[] directoriesToCheck = [assemblyDirectory];
     foreach (DirectoryInfo currentDirectory in directoriesToCheck)
     {

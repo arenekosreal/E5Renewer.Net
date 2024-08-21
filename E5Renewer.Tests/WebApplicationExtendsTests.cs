@@ -15,7 +15,6 @@ namespace E5Renewer.Tests;
 [TestClass]
 public class WebApplicationExtendsTests
 {
-    private const int timestampDelayMilliSeconds = 100;
     /// <summary>Test
     /// <see cref="WebApplicationExtends.UseAuthTokenAuthentication(Microsoft.AspNetCore.Builder.WebApplication, string)"/>
     /// </summary>
@@ -40,6 +39,7 @@ public class WebApplicationExtendsTests
             {
                 Assert.AreEqual(target, response.StatusCode);
             }
+            await app.StopAsync();
         }
     }
     /// <summary>Test
@@ -61,6 +61,7 @@ public class WebApplicationExtendsTests
             {
                 Assert.AreEqual(HttpStatusCode.Forbidden, response.StatusCode);
             }
+            await app.StopAsync();
         }
     }
 
@@ -88,6 +89,7 @@ public class WebApplicationExtendsTests
             {
                 Assert.AreEqual(target, response.StatusCode);
             }
+            await app.StopAsync();
         }
 
     }
@@ -114,11 +116,11 @@ public class WebApplicationExtendsTests
                 app.MapGet("/", () => "OK");
                 await app.StartAsync();
                 HttpClient client = app.GetTestClient();
-                await Task.Delay(WebApplicationExtendsTests.timestampDelayMilliSeconds);
                 using (HttpResponseMessage response = await client.GetAsync("/"))
                 {
                     Assert.AreEqual(HttpStatusCode.Forbidden, response.StatusCode);
                 }
+                await app.StopAsync();
             }
         }
         /// <summary>Test
@@ -137,11 +139,11 @@ public class WebApplicationExtendsTests
                 app.MapPost("/", () => "OK");
                 await app.StartAsync();
                 HttpClient client = app.GetTestClient();
-                await Task.Delay(WebApplicationExtendsTests.timestampDelayMilliSeconds);
                 using (HttpResponseMessage response = await client.PostAsync("/", new StringContent("{}")))
                 {
                     Assert.AreEqual(HttpStatusCode.Forbidden, response.StatusCode);
                 }
+                await app.StopAsync();
             }
         }
         /// <summary>Test
@@ -162,12 +164,12 @@ public class WebApplicationExtendsTests
                 HttpClient client = app.GetTestClient();
 
                 UnixTimestampGenerator timestampGenerator = new();
-                await Task.Delay(WebApplicationExtendsTests.timestampDelayMilliSeconds);
                 long badTimestamp = timestampGenerator.GetUnixTimestamp() - 40 * 1000;
                 using (HttpResponseMessage response = await client.GetAsync(string.Format("/?timestamp={0}", badTimestamp.ToString())))
                 {
                     Assert.AreEqual(HttpStatusCode.Forbidden, response.StatusCode);
                 }
+                await app.StopAsync();
             }
         }
         /// <summary>Test
@@ -188,7 +190,6 @@ public class WebApplicationExtendsTests
                 HttpClient client = app.GetTestClient();
 
                 UnixTimestampGenerator timestampGenerator = new();
-                await Task.Delay(WebApplicationExtendsTests.timestampDelayMilliSeconds);
                 long badTimestamp = timestampGenerator.GetUnixTimestamp() - 40 * 1000;
                 Dictionary<string, string> data = new()
                 {
@@ -198,6 +199,7 @@ public class WebApplicationExtendsTests
                 {
                     Assert.AreEqual(HttpStatusCode.Forbidden, response.StatusCode);
                 }
+                await app.StopAsync();
             }
         }
         /// <summary>Test
@@ -218,12 +220,12 @@ public class WebApplicationExtendsTests
                 HttpClient client = app.GetTestClient();
 
                 UnixTimestampGenerator timestampGenerator = new();
-                await Task.Delay(WebApplicationExtendsTests.timestampDelayMilliSeconds);
                 long timestamp = timestampGenerator.GetUnixTimestamp();
                 using (HttpResponseMessage response = await client.GetAsync(string.Format("/?timestamp={0}", timestamp.ToString())))
                 {
                     Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
                 }
+                await app.StopAsync();
             }
         }
         /// <summary>Test
@@ -244,7 +246,6 @@ public class WebApplicationExtendsTests
                 HttpClient client = app.GetTestClient();
 
                 UnixTimestampGenerator timestampGenerator = new();
-                await Task.Delay(WebApplicationExtendsTests.timestampDelayMilliSeconds);
                 long timestamp = timestampGenerator.GetUnixTimestamp();
                 Dictionary<string, string> data = new()
                 {
@@ -254,6 +255,7 @@ public class WebApplicationExtendsTests
                 {
                     Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
                 }
+                await app.StopAsync();
             }
         }
     }

@@ -39,7 +39,7 @@ public class TomlParser : IConfigParser
             runtimeConfig = Toml.ToModel<Config>(
                 await stream.ReadToEndAsync(), path, new()
                 {
-                    ConvertPropertyName = (input) => input.SnakeCaseToCamelCase()
+                    ConvertPropertyName = (input) => input.ToSnakeCase()
                 }
             );
         }

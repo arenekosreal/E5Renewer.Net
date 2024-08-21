@@ -69,15 +69,7 @@ namespace E5Renewer.Models.GraphAPIs
                 if (File.Exists(user.certificate))
                 {
                     this.logger.LogDebug("Using certificate to get user token.");
-                    string? password = null;
-                    foreach (ICertificatePasswordProvider provider in this.certificatePasswordProviders)
-                    {
-                        password = await provider.GetPasswordForCertificateAsync(user.certificate);
-                        if (password is not null)
-                        {
-                            break;
-                        }
-                    }
+                    string? password = await this.GetPasswordForCertificateAsync(user.certificate);
                     if (password is not null)
                     {
                         this.logger.LogDebug("Found password for certificate given.");
@@ -119,14 +111,26 @@ namespace E5Renewer.Models.GraphAPIs
         {
             if (user.enabled)
             {
-                const uint calmDownMinMilliSeconds = 300000;
-                const uint calmDownMaxMilliSeconds = 500000;
+                const int calmDownMinMilliSeconds = 300000;
+                const int calmDownMaxMilliSeconds = 500000;
                 Random random = new();
-                int milliseconds = random.Next((int)calmDownMinMilliSeconds, (int)calmDownMaxMilliSeconds);
+                int milliseconds = random.Next(calmDownMinMilliSeconds, calmDownMaxMilliSeconds);
                 this.logger.LogDebug("{0} is going to sleep for {1} millisecond(s)", user.name, milliseconds);
                 await Task.Delay(milliseconds, token);
             }
         }
 
+        private async Task<string?> GetPasswordForCertificateAsync(string certificate)
+        {
+            foreach (ICertificatePasswordProvider provider in this.certificatePasswordProviders)
+            {
+                string? password = await provider.GetPasswordForCertificateAsync(certificate);
+                if (password is not null)
+                {
+                    return password;
+                }
+            }
+            return null;
+        }
     }
 }

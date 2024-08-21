@@ -54,7 +54,7 @@ A tool to renew e5 subscription by calling msgraph APIs
 Using `curl` or any tool which can send http request, send request to `http://<listen_addr>:<listen_port>` or unix socket `<listen_socket>`,
 each request should be sent with header `Authentication: <auth_token>`.
 You will get json response if everything is fine. If it is a GET request, send milisecond timestamp in query param `timestamp`,
-If it is a POST request, send milisecond timestamp in post json with key `timestamp`.
+If it is a POST request, send milisecond timestamp in post json with key `timestamp` and convert it to string.
 
 For example:
 

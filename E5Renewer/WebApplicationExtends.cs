@@ -69,7 +69,7 @@ namespace E5Renewer
                         timestamp = -1;
                     }
                     long timestampNow = app.Services.GetRequiredService<IUnixTimestampGenerator>().GetUnixTimestamp();
-                    if (timestamp > 0 && timestampNow > timestamp && timestampNow - timestamp <= allowedMaxSeconds * 1000)
+                    if ((timestamp > 0) && (timestampNow > timestamp) && (timestampNow - timestamp <= allowedMaxSeconds * 1000))
                     {
                         await next();
                         return;

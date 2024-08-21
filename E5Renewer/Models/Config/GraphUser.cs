@@ -2,7 +2,7 @@ namespace E5Renewer.Models.Config
 {
     /// <summary>class to store info to access msgraph apis.</summary>
     /// <remarks>For compatibility to Python version.</remarks>
-    public sealed class GraphUser : ICheckable
+    public sealed record class GraphUser : ICheckable
     {
         /// <value>The name of user.</value>
         public string name { get; set; }

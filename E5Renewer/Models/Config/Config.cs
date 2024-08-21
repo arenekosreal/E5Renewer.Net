@@ -2,7 +2,7 @@ namespace E5Renewer.Models.Config
 {
     /// <summary>class to store program config.</summary>
     /// <remarks>For compatibility to Python version.</remarks>
-    public sealed class Config : ICheckable
+    public sealed record class Config : ICheckable
     {
         /// <value>Authentication token.</value>
         public string authToken { get; set; }

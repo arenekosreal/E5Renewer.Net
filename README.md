@@ -1,9 +1,10 @@
 # MS365 E5 Subscription Renewer
 
+[![Run tests](https://github.com/arenekosreal/E5Renewer.Net/actions/workflows/test.yaml/badge.svg)](https://github.com/arenekosreal/E5Renewer.Net/actions/workflows/test.yaml)
+
 ## What is this
 
 A tool to renew e5 subscription by calling msgraph APIs
-[![Run tests](https://github.com/arenekosreal/E5Renewer.Net/actions/workflows/test.yaml/badge.svg)](https://github.com/arenekosreal/E5Renewer.Net/actions/workflows/test.yaml)
 
 ## How to use
 1. Create Application

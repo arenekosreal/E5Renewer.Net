@@ -35,9 +35,9 @@ public class YamlParserTests
     public async Task TestParseConfigAsyncAuthToken(string json, bool result)
     {
         string tmpPath = Path.GetTempFileName();
-        await File.WriteAllTextAsync(tmpPath,json);
+        await File.WriteAllTextAsync(tmpPath, json);
         E5Renewer.Models.Config.Config config = await this.parser.ParseConfigAsync(tmpPath);
         bool compareResult = config.authToken == "test-token";
-        Assert.AreEqual(result,compareResult);
+        Assert.AreEqual(result, compareResult);
     }
 }

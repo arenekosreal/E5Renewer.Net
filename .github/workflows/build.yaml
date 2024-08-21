@@ -42,7 +42,7 @@ jobs:
           cp -r E5Renewer.Modules.YamlParser/bin/Release/net${{ matrix.dotnet }}/publish dist/modules/E5Renewer.Modules.YamlParser
         
       - name: "Create archive"
-        run: "7z a E5Renewer-${{ steps.build-env-info.outputs.system }}-${{ steps.build-env-info.outputs.machine }}.7z dist/*"
+        run: "7z a E5Renewer-${{ steps.build-env-info.outputs.system }}-${{ steps.build-env-info.outputs.machine }}.7z ./dist/*"
       - name: "Upload archive"
         uses: "actions/upload-artifact@v4"
         with:
@@ -61,5 +61,6 @@ jobs:
       - name: "Create release"
         uses: "softprops/action-gh-release@v2"
         with:
-          files: "E5Renewer*.7z"
+          files: "**/E5Renewer-*.7z"
           generate_release_notes: true
+          fail_on_unmatched_files: true

@@ -15,6 +15,7 @@ namespace E5Renewer.Tests;
 [TestClass]
 public class WebApplicationExtendsTests
 {
+    private static readonly Uri baseAddress = new ("http://localhost:65530/");
     /// <summary>Test
     /// <see cref="WebApplicationExtends.UseAuthTokenAuthentication(Microsoft.AspNetCore.Builder.WebApplication, string)"/>
     /// </summary>
@@ -26,7 +27,7 @@ public class WebApplicationExtendsTests
         const string validAuthToken = "example-auth-token";
 
         WebApplicationBuilder webApplicationBuilder = WebApplication.CreateBuilder();
-        webApplicationBuilder.WebHost.UseTestServer();
+        webApplicationBuilder.WebHost.UseTestServer((opt) => opt.BaseAddress = WebApplicationExtendsTests.baseAddress);
         using (WebApplication app = webApplicationBuilder.Build())
         {
             app.UseAuthTokenAuthentication(validAuthToken);
@@ -49,7 +50,7 @@ public class WebApplicationExtendsTests
     public async Task TestUseAuthTokenAuthentication()
     {
         WebApplicationBuilder webApplicationBuilder = WebApplication.CreateBuilder();
-        webApplicationBuilder.WebHost.UseTestServer();
+        webApplicationBuilder.WebHost.UseTestServer((opt) => opt.BaseAddress = WebApplicationExtendsTests.baseAddress);
         using (WebApplication app = webApplicationBuilder.Build())
         {
             app.UseAuthTokenAuthentication("example-auth-token");
@@ -76,7 +77,7 @@ public class WebApplicationExtendsTests
         const string methodAllowed = "GET";
 
         WebApplicationBuilder webApplicationBuilder = WebApplication.CreateBuilder();
-        webApplicationBuilder.WebHost.UseTestServer();
+        webApplicationBuilder.WebHost.UseTestServer((opt) => opt.BaseAddress = WebApplicationExtendsTests.baseAddress);
         using (WebApplication app = webApplicationBuilder.Build())
         {
             app.UseHttpMethodChecker(methodAllowed);
@@ -108,7 +109,7 @@ public class WebApplicationExtendsTests
         public async Task TestUseUnixTimestampCheckerMissingGet()
         {
             WebApplicationBuilder webApplicationBuilder = WebApplication.CreateBuilder();
-            webApplicationBuilder.WebHost.UseTestServer();
+            webApplicationBuilder.WebHost.UseTestServer((opt) => opt.BaseAddress = WebApplicationExtendsTests.baseAddress);
             webApplicationBuilder.Services.AddSingleton<IUnixTimestampGenerator, UnixTimestampGenerator>();
             using (WebApplication app = webApplicationBuilder.Build())
             {
@@ -131,7 +132,7 @@ public class WebApplicationExtendsTests
         public async Task TestUseUnixTimestampCheckerMissingPost()
         {
             WebApplicationBuilder webApplicationBuilder = WebApplication.CreateBuilder();
-            webApplicationBuilder.WebHost.UseTestServer();
+            webApplicationBuilder.WebHost.UseTestServer((opt) => opt.BaseAddress = WebApplicationExtendsTests.baseAddress);
             webApplicationBuilder.Services.AddSingleton<IUnixTimestampGenerator, UnixTimestampGenerator>();
             using (WebApplication app = webApplicationBuilder.Build())
             {
@@ -180,7 +181,7 @@ public class WebApplicationExtendsTests
         public async Task TestUseUnixTimestampCheckerInvalidPost()
         {
             WebApplicationBuilder webApplicationBuilder = WebApplication.CreateBuilder();
-            webApplicationBuilder.WebHost.UseTestServer();
+            webApplicationBuilder.WebHost.UseTestServer((opt) => opt.BaseAddress = WebApplicationExtendsTests.baseAddress);
             webApplicationBuilder.Services.AddSingleton<IUnixTimestampGenerator, UnixTimestampGenerator>();
             using (WebApplication app = webApplicationBuilder.Build())
             {
@@ -210,7 +211,7 @@ public class WebApplicationExtendsTests
         public async Task TestUseUnixTimestampCheckerGet()
         {
             WebApplicationBuilder webApplicationBuilder = WebApplication.CreateBuilder();
-            webApplicationBuilder.WebHost.UseTestServer();
+            webApplicationBuilder.WebHost.UseTestServer((opt) => opt.BaseAddress = WebApplicationExtendsTests.baseAddress);
             webApplicationBuilder.Services.AddSingleton<IUnixTimestampGenerator, UnixTimestampGenerator>();
             using (WebApplication app = webApplicationBuilder.Build())
             {
@@ -236,7 +237,7 @@ public class WebApplicationExtendsTests
         public async Task TestUseUnixTimestampCheckerPost()
         {
             WebApplicationBuilder webApplicationBuilder = WebApplication.CreateBuilder();
-            webApplicationBuilder.WebHost.UseTestServer();
+            webApplicationBuilder.WebHost.UseTestServer((opt) => opt.BaseAddress = WebApplicationExtendsTests.baseAddress);
             webApplicationBuilder.Services.AddSingleton<IUnixTimestampGenerator, UnixTimestampGenerator>();
             using (WebApplication app = webApplicationBuilder.Build())
             {

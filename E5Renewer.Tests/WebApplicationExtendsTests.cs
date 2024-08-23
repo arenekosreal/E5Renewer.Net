@@ -16,6 +16,8 @@ namespace E5Renewer.Tests;
 public class WebApplicationExtendsTests
 {
     private static readonly Uri baseAddress = new("http://localhost:65530/");
+    private const string requestUri = "/test";
+    private static readonly Func<string> responseAction = () => "OK";
     /// <summary>Test
     /// <see cref="WebApplicationExtends.UseAuthTokenAuthentication(Microsoft.AspNetCore.Builder.WebApplication, string)"/>
     /// </summary>
@@ -31,12 +33,12 @@ public class WebApplicationExtendsTests
         using (WebApplication app = webApplicationBuilder.Build())
         {
             app.UseAuthTokenAuthentication(validAuthToken);
-            app.MapGet("/", () => "OK");
+            app.MapGet(WebApplicationExtendsTests.requestUri, WebApplicationExtendsTests.responseAction);
             await app.StartAsync();
             HttpClient client = app.GetTestClient();
 
             client.DefaultRequestHeaders.Add("Authentication", token);
-            using (HttpResponseMessage response = await client.GetAsync("/"))
+            using (HttpResponseMessage response = await client.GetAsync(WebApplicationExtendsTests.requestUri))
             {
                 Assert.AreEqual(target, response.StatusCode);
             }
@@ -54,11 +56,11 @@ public class WebApplicationExtendsTests
         using (WebApplication app = webApplicationBuilder.Build())
         {
             app.UseAuthTokenAuthentication("example-auth-token");
-            app.MapGet("/", () => "OK");
+            app.MapGet(WebApplicationExtendsTests.requestUri, WebApplicationExtendsTests.responseAction);
             await app.StartAsync();
             HttpClient client = app.GetTestClient();
 
-            using (HttpResponseMessage response = await client.GetAsync("/"))
+            using (HttpResponseMessage response = await client.GetAsync(WebApplicationExtendsTests.requestUri))
             {
                 Assert.AreEqual(HttpStatusCode.Forbidden, response.StatusCode);
             }
@@ -81,11 +83,14 @@ public class WebApplicationExtendsTests
         using (WebApplication app = webApplicationBuilder.Build())
         {
             app.UseHttpMethodChecker(methodAllowed);
-            app.MapGet("/", () => "OK");
+            app.MapGet(WebApplicationExtendsTests.requestUri, WebApplicationExtendsTests.responseAction);
             await app.StartAsync();
             HttpClient client = app.GetTestClient();
 
-            HttpRequestMessage msg = new(new(method), "/");
+            HttpRequestMessage msg = new(
+                new(method),
+                WebApplicationExtendsTests.requestUri
+            );
             using (HttpResponseMessage response = await client.SendAsync(msg))
             {
                 Assert.AreEqual(target, response.StatusCode);
@@ -114,10 +119,10 @@ public class WebApplicationExtendsTests
             using (WebApplication app = webApplicationBuilder.Build())
             {
                 app.UseUnixTimestampChecker();
-                app.MapGet("/", () => "OK");
+                app.MapGet(WebApplicationExtendsTests.requestUri, WebApplicationExtendsTests.responseAction);
                 await app.StartAsync();
                 HttpClient client = app.GetTestClient();
-                using (HttpResponseMessage response = await client.GetAsync("/"))
+                using (HttpResponseMessage response = await client.GetAsync(WebApplicationExtendsTests.requestUri))
                 {
                     Assert.AreEqual(HttpStatusCode.Forbidden, response.StatusCode);
                 }
@@ -137,10 +142,13 @@ public class WebApplicationExtendsTests
             using (WebApplication app = webApplicationBuilder.Build())
             {
                 app.UseUnixTimestampChecker();
-                app.MapPost("/", () => "OK");
+                app.MapPost(WebApplicationExtendsTests.requestUri, WebApplicationExtendsTests.responseAction);
                 await app.StartAsync();
                 HttpClient client = app.GetTestClient();
-                using (HttpResponseMessage response = await client.PostAsync("/", new StringContent("{}")))
+                using (HttpResponseMessage response = await client.PostAsync(
+                    WebApplicationExtendsTests.requestUri,
+                    new StringContent("{}")
+                ))
                 {
                     Assert.AreEqual(HttpStatusCode.Forbidden, response.StatusCode);
                 }
@@ -160,13 +168,19 @@ public class WebApplicationExtendsTests
             using (WebApplication app = webApplicationBuilder.Build())
             {
                 app.UseUnixTimestampChecker();
-                app.MapGet("/", () => "OK");
+                app.MapGet(WebApplicationExtendsTests.requestUri, WebApplicationExtendsTests.responseAction);
                 await app.StartAsync();
                 HttpClient client = app.GetTestClient();
 
                 UnixTimestampGenerator timestampGenerator = new();
                 long badTimestamp = timestampGenerator.GetUnixTimestamp() - 40 * 1000;
-                using (HttpResponseMessage response = await client.GetAsync(string.Format("/?timestamp={0}", badTimestamp.ToString())))
+                using (HttpResponseMessage response = await client.GetAsync(
+                    string.Format(
+                      "{0}?timestamp={1}",
+                        WebApplicationExtendsTests.requestUri,
+                        badTimestamp.ToString()
+                    )
+                ))
                 {
                     Assert.AreEqual(HttpStatusCode.Forbidden, response.StatusCode);
                 }
@@ -186,7 +200,7 @@ public class WebApplicationExtendsTests
             using (WebApplication app = webApplicationBuilder.Build())
             {
                 app.UseUnixTimestampChecker();
-                app.MapPost("/", () => "OK");
+                app.MapPost(WebApplicationExtendsTests.requestUri, WebApplicationExtendsTests.responseAction);
                 await app.StartAsync();
                 HttpClient client = app.GetTestClient();
 
@@ -196,7 +210,10 @@ public class WebApplicationExtendsTests
                 {
                     {"timestamp", badTimestamp.ToString()}
                 };
-                using (HttpResponseMessage response = await client.PostAsync("/", JsonContent.Create(data)))
+                using (HttpResponseMessage response = await client.PostAsync(
+                    WebApplicationExtendsTests.requestUri,
+                    JsonContent.Create(data)
+                ))
                 {
                     Assert.AreEqual(HttpStatusCode.Forbidden, response.StatusCode);
                 }
@@ -216,13 +233,19 @@ public class WebApplicationExtendsTests
             using (WebApplication app = webApplicationBuilder.Build())
             {
                 app.UseUnixTimestampChecker();
-                app.MapGet("/", () => "OK");
+                app.MapGet(WebApplicationExtendsTests.requestUri, WebApplicationExtendsTests.responseAction);
                 await app.StartAsync();
                 HttpClient client = app.GetTestClient();
 
                 UnixTimestampGenerator timestampGenerator = new();
                 long timestamp = timestampGenerator.GetUnixTimestamp();
-                using (HttpResponseMessage response = await client.GetAsync(string.Format("/?timestamp={0}", timestamp.ToString())))
+                using (HttpResponseMessage response = await client.GetAsync(
+                    string.Format(
+                      "{0}?timestamp={1}",
+                        WebApplicationExtendsTests.requestUri,
+                        timestamp.ToString()
+                    )
+                ))
                 {
                     Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
                 }
@@ -242,7 +265,7 @@ public class WebApplicationExtendsTests
             using (WebApplication app = webApplicationBuilder.Build())
             {
                 app.UseUnixTimestampChecker();
-                app.MapPost("/", () => "OK");
+                app.MapPost(WebApplicationExtendsTests.requestUri, WebApplicationExtendsTests.responseAction);
                 await app.StartAsync();
                 HttpClient client = app.GetTestClient();
 
@@ -252,7 +275,10 @@ public class WebApplicationExtendsTests
                 {
                     {"timestamp", timestamp.ToString()}
                 };
-                using (HttpResponseMessage response = await client.PostAsync("/", JsonContent.Create(data)))
+                using (HttpResponseMessage response = await client.PostAsync(
+                    WebApplicationExtendsTests.requestUri,
+                    JsonContent.Create(data)
+                ))
                 {
                     Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
                 }

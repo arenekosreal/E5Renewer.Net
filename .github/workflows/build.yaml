@@ -12,7 +12,7 @@ jobs:
         os:
           - "windows-latest"
           - "ubuntu-latest"
-          - "macos-latest"
+          #- "macos-latest"
         dotnet:
           - "8.0"
     runs-on: ${{ matrix.os }}

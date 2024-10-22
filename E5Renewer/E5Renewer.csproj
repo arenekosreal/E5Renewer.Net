@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Azure.Identity" Version="1.12.1" />
+    <PackageReference Include="Azure.Identity" Version="1.13.0" />
     <PackageReference Include="CaseConverter" Version="2.0.1" />
     <PackageReference Include="Microsoft.Graph" Version="5.61.0" />
     <PackageReference Include="SemanticVersioning" Version="2.0.2" />

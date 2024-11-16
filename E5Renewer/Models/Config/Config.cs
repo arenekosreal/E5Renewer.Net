@@ -56,7 +56,7 @@ namespace E5Renewer.Models.Config
             this.listenAddr = "127.0.0.1";
             this.listenPort = 8888;
             this.listenSocket = "/run/e5renewer/e5renewer.socket";
-            this.listenSocketPermission = 666;
+            this.listenSocketPermission = Convert.ToUInt32("666", 8);
             this.users = new();
         }
     }

@@ -37,6 +37,10 @@ A tool to renew e5 subscription by calling msgraph APIs
     If you want to use certificate instead secret, which is better for security, you can write a `certificate` key with path to your certificate file instead `secret` key.
 
     Tips: We support json, yaml and toml formats, just let their contents be equal, the configuration result is same.
+    
+    > [!NOTE]
+    > Due to that C# does not have a native octal number support, we use the `listen_socket_permission` as unix permission directly.
+    > For example, if you are using json format, you need to set it to `438` in order to see socket mode is `rw-rw-rw-`.
 
 3. Install .NET
 

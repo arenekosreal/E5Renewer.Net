@@ -33,15 +33,13 @@ namespace E5Renewer.Models.Secrets.Json
         {
             if (!this.cache.ContainsKey(userSecret))
             {
-                JsonSerializerOptions options = new()
-                {
-                    PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
-                    IncludeFields = true
-                };
-                options.Converters.Add(new FileInfoOrNullConverter());
                 using (FileStream fileStream = userSecret.OpenRead())
                 {
-                    this.cache[userSecret] = await JsonSerializer.DeserializeAsync<UserSecret>(fileStream, options);
+                    JsonSerializableUserSecret? secret = await JsonSerializer.DeserializeAsync<JsonSerializableUserSecret>(
+                        fileStream,
+                        LoaderJsonSerializerContext.Default.JsonSerializableUserSecret
+                    );
+                    this.cache[userSecret] = secret?.value ?? new();
                 }
             }
             return this.cache[userSecret];

@@ -1,5 +1,4 @@
 using System.Collections.Immutable;
-using System.Text.Json.Serialization;
 
 namespace E5Renewer.Models.Secrets
 {
@@ -13,11 +12,9 @@ namespace E5Renewer.Models.Secrets
         public ImmutableDictionary<string, string>? passwords { get; }
 
         /// <value>If this is correct to be used.</value>
-        [JsonIgnore]
         public bool valid { get => this.users.All((user) => user.valid); }
 
         /// <summary>Initialize <see cref="UserSecret"/> instance with arguments given.</summary>
-        [JsonConstructor]
         public UserSecret(ImmutableList<User> users, ImmutableDictionary<string, string>? passwords) =>
             (this.users, this.passwords) = (users, passwords);
     }
@@ -41,19 +38,15 @@ namespace E5Renewer.Models.Secrets
         public FileInfo? certificate { get; }
 
         /// <value>When to start the user.</value>
-        [JsonInclude]
         private TimeOnly? fromTime { get; }
 
         /// <value>When to stop the user.</value>
-        [JsonInclude]
         private TimeOnly? toTime { get; }
 
         /// <value>Which days are allowed to start the user.</value>
-        [JsonInclude]
         private ImmutableList<DayOfWeek>? days { get; }
 
         /// <value>If this secret is valid to be used.</value>
-        [JsonIgnore]
         public bool valid
         {
             get
@@ -65,7 +58,6 @@ namespace E5Renewer.Models.Secrets
         }
 
         /// <value>How long to start the user.</value>
-        [JsonIgnore]
         public TimeSpan timeToStart
         {
             get
@@ -108,7 +100,6 @@ namespace E5Renewer.Models.Secrets
         }
 
         /// <summary>Initialize <see cref="User"/> instance with arguments given.</summary>
-        [JsonConstructor]
         public User(
             string name, string tenantId, string clientId, string? secret, FileInfo? certificate,
             TimeOnly? fromTime, TimeOnly? toTime, ImmutableList<DayOfWeek>? days

@@ -7,12 +7,10 @@ namespace E5Renewer.Models.Modules
         private readonly ILogger<DeprecatedModulesChecker> logger;
 
         /// <summary>Initialize the <c>DeprecatedModulesChecker</c> instance.</summary>
-        /// <param name="loggerFactory">The logger factory to create logger to generate outputs.</param>
+        /// <param name="logger">The logger factory to create logger to generate outputs.</param>
         /// <remarks>All the parameters should be injected by Asp.Net Core.</remarks>
-        public DeprecatedModulesChecker(ILoggerFactory loggerFactory)
-        {
-            this.logger = loggerFactory.CreateLogger<DeprecatedModulesChecker>();
-        }
+        public DeprecatedModulesChecker(ILogger<DeprecatedModulesChecker> logger) =>
+            this.logger = logger;
 
         /// <inheritdoc/>
         public string name { get => nameof(DeprecatedModulesChecker); }

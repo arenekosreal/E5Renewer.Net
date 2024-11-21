@@ -12,7 +12,7 @@ jobs:
         os:
           - "windows-latest"
           - "ubuntu-latest"
-          #- "macos-latest"
+          - "macos-latest"
         dotnet:
           - "8.0"
     runs-on: ${{ matrix.os }}
@@ -37,9 +37,6 @@ jobs:
       - name: "Construct files"
         run: |
           cp -r E5Renewer/bin/Release/net${{ matrix.dotnet }}/publish dist
-          mkdir -p dist/modules
-          cp -r E5Renewer.Modules.TomlParser/bin/Release/net${{ matrix.dotnet }}/publish dist/modules/E5Renewer.Modules.TomlParser
-          cp -r E5Renewer.Modules.YamlParser/bin/Release/net${{ matrix.dotnet }}/publish dist/modules/E5Renewer.Modules.YamlParser
         
       - name: "Create archive"
         run: "7z a E5Renewer-${{ steps.build-env-info.outputs.system }}-${{ steps.build-env-info.outputs.machine }}.7z ./dist/*"

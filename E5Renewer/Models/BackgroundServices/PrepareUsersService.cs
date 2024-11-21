@@ -1,5 +1,5 @@
-using E5Renewer.Models.Config;
 using E5Renewer.Models.GraphAPIs;
+using E5Renewer.Models.Secrets;
 using E5Renewer.Models.Statistics;
 
 namespace E5Renewer.Models.BackgroundServices
@@ -11,60 +11,64 @@ namespace E5Renewer.Models.BackgroundServices
     public class PrepareUsersService : BackgroundService
     {
         private readonly ILogger<PrepareUsersService> logger;
-        private readonly IEnumerable<GraphUser> users;
-        private readonly IServiceProvider serviceProvider;
+        private readonly ISecretProvider secretProvider;
         private readonly IStatusManager statusManager;
+        private readonly IEnumerable<IGraphAPICaller> apiCallers;
+        private readonly Dictionary<User, IGraphAPICaller> callerCache = new();
 
         /// <summary>Initialize <c>PrepareUsersService</c> with parameters.</summary>
         /// <param name="logger">The logger to create log.</param>
-        /// <param name="users">The <see cref="GraphUser">GraphUser</see>s to process.</param>
-        /// <param name="serviceProvider">The <see cref="IServiceProvider">IServiceProvider</see> implementation.</param>
-        /// <param name="statusManager">The <see cref="IStatusManager">IStatusManager</see> implementation.</param>
+        /// <param name="secretProvider">The <see cref="ISecretProvider"/> implicit.</param>
+        /// <param name="statusManager">The <see cref="IStatusManager"/> implementation.</param>
+        /// <param name="apiCallers">A series of <see cref="IGraphAPICaller"/> implementations.</param>
         /// <remarks>All parameters should be injected by AspNet.Core.</remarks>
         public PrepareUsersService(
             ILogger<PrepareUsersService> logger,
-            IEnumerable<GraphUser> users,
-            IServiceProvider serviceProvider,
-            IStatusManager statusManager
+            ISecretProvider secretProvider,
+            IStatusManager statusManager,
+            IEnumerable<IGraphAPICaller> apiCallers
         )
         {
             this.logger = logger;
-            this.users = users;
-            this.serviceProvider = serviceProvider;
+            this.secretProvider = secretProvider;
             this.statusManager = statusManager;
+            this.apiCallers = apiCallers;
         }
 
         /// <inheritdoc/>
         protected override async Task ExecuteAsync(CancellationToken token)
         {
-            foreach (GraphUser user in this.users)
+            IEnumerable<User> users =
+                (await this.secretProvider.GetUserSecretAsync()).users;
+            // TODO: Parallel?
+            foreach (User user in users)
             {
-                await this.DoAPICallForUser(token, user, this.statusManager);
+                while (!token.IsCancellationRequested && user.valid)
+                {
+                    bool enabled = user.timeToStart == TimeSpan.Zero;
+                    await this.statusManager.SetUserStatusAsync(user.name, enabled);
+                    if (enabled)
+                    {
+                        if (!this.callerCache.ContainsKey(user))
+                        {
+                            Random random = new();
+                            this.callerCache[user] = random.GetItems(this.apiCallers.ToArray(), 1)[0];
+                        }
+                        await this.callerCache[user].CallNextAPIAsync(user);
+                        await this.callerCache[user].CalmDownAsync(token, user);
+                    }
+                    else
+                    {
+                        TimeSpan delay = user.timeToStart;
+                        this.logger.LogDebug(
+                            "Sleeping for {0} day(s), {1} hour(s), {2} miniute(s), {3} second(s) and {4} millisecond(s) to wait starting user {5}...",
+                                delay.Days, delay.Hours, delay.Minutes, delay.Seconds, delay.Milliseconds, user.name
+                        );
+                        await Task.Delay(delay, token);
+                    }
+                }
             }
 
-        }
-
-        private async Task DoAPICallForUser(CancellationToken token, GraphUser user, IStatusManager statusManager)
-        {
-            IGraphAPICaller apiCaller = this.serviceProvider.GetRequiredKeyedService<IGraphAPICaller>(user);
-            while (!token.IsCancellationRequested)
-            {
-                await statusManager.SetUserStatusAsync(user.name, user.enabled);
-                if (user.enabled)
-                {
-                    await apiCaller.CallNextAPIAsync(user);
-                    await apiCaller.CalmDownAsync(token, user);
-                }
-                else
-                {
-                    TimeSpan delay = user.timeToStart;
-                    this.logger.LogDebug(
-                        "Sleeping for {0} day(s), {1} hour(s), {2} miniute(s), {3} second(s) and {4} millisecond(s) to wait starting user {5}...",
-                            delay.Days, delay.Hours, delay.Minutes, delay.Seconds, delay.Milliseconds, user.name
-                    );
-                    await Task.Delay(delay, token);
-                }
-            }
         }
     }
 }

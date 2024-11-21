@@ -4,17 +4,22 @@ Wants=network-online.target
 After=network-online.target
 
 [Service]
-ExecStart=E5Renewer -c /etc/e5renewer/config.json --systemd
+LoadCredential=user-secret.json:%E/e5renewer/user-secret.json
+LoadCredential=token.txt:%E/e5renewer/token.txt
+ExecStart=/usr/bin/E5Renewer \
+    --user-secret=%d/user-secret.json \
+    --token-file=%d/token.txt \
+    --systemd
 
 User=e5renewer
 DynamicUser=yes
+
+RuntimeDirectory=e5renewer
 
 NoNewPrivileges=yes
 
 ProtectSystem=strict
 ProtectHome=yes
-RuntimeDirectory=e5renewer
-ConfigurationDirectory=e5renewer
 PrivateDevices=yes
 PrivateNetwork=yes
 PrivateUsers=yes

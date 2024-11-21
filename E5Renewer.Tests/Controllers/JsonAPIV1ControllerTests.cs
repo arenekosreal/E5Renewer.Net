@@ -5,6 +5,7 @@ using E5Renewer.Models.Statistics;
 using Microsoft.Extensions.Logging;
 
 using NSubstitute;
+using Microsoft.AspNetCore.Http;
 
 namespace E5Renewer.Tests.Controllers;
 
@@ -30,11 +31,18 @@ public class JsonAPIV1ControllerTests
 
         IAPIFunction apiFunction = Substitute.For<IAPIFunction>();
         apiFunction.id.Returns("test");
-
         List<IAPIFunction> apiFunctions = [apiFunction];
-        IUnixTimestampGenerator generator = new UnixTimestampGenerator();
 
-        this.controller = new(logger, statusManager, apiFunctions, generator);
+        IUnixTimestampGenerator generator = Substitute.For<IUnixTimestampGenerator>();
+        generator.GetUnixTimestamp().Returns((long)42);
+
+        IDummyResultGenerator dummyResultGenerator = Substitute.For<IDummyResultGenerator>();
+        InvokeResult dummyResult = new();
+        HttpContext context = new DefaultHttpContext();
+        dummyResultGenerator.GenerateDummyResultAsync(context).ReturnsForAnyArgs(dummyResult);
+        dummyResultGenerator.GenerateDummyResult(context).ReturnsForAnyArgs(dummyResult);
+
+        this.controller = new(logger, statusManager, apiFunctions, generator, dummyResultGenerator);
     }
     /// <summary>Test
     /// <see cref="JsonAPIV1Controller.GetListApis" />
@@ -84,5 +92,14 @@ public class JsonAPIV1ControllerTests
         Assert.AreEqual("testId", result.args["api_name"]);
         string? status = ((IEnumerable<string>?)result.result)?.First();
         Assert.AreEqual("200 - OK", status);
+    }
+    /// <summary>Test
+    /// <see cfef="JsonAPIV1Controller.Handle" />
+    /// </summary>
+    [TestMethod]
+    public async Task TestHandle()
+    {
+        InvokeResult result = await this.controller.Handle();
+        Assert.AreEqual(new(), result);
     }
 }

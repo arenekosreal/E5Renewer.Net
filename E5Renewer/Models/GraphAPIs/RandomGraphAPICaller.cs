@@ -3,8 +3,8 @@ using System.Security.Cryptography.X509Certificates;
 using Azure.Core;
 using Azure.Identity;
 
-using E5Renewer.Models.Config;
 using E5Renewer.Models.Modules;
+using E5Renewer.Models.Secrets;
 using E5Renewer.Models.Statistics;
 
 using Microsoft.Graph;
@@ -21,26 +21,26 @@ namespace E5Renewer.Models.GraphAPIs
         private readonly ILogger<RandomGraphAPICaller> logger;
         private readonly IEnumerable<IAPIFunction> apiFunctions;
         private readonly IStatusManager statusManager;
-        private readonly IEnumerable<ICertificatePasswordProvider> certificatePasswordProviders;
-        private readonly Dictionary<GraphUser, GraphServiceClient> clients = new();
+        private readonly ISecretProvider secretProvider;
+        private readonly Dictionary<User, GraphServiceClient> clients = new();
 
         /// <summary>Initialize <c>RandomGraphAPICaller</c> with parameters given.</summary>
         /// <param name="logger">The logger to generate log.</param>
         /// <param name="apiFunctions">All known api functions with their id.</param>
-        /// <param name="statusManager"><see cref="IStatusManager">IStatusManager</see> implementation.</param>
-        /// <param name="certificatePasswordProviders"><see cref="ICertificatePasswordProvider">ICertificatePasswordProvider</see> implementations.</param>
+        /// <param name="statusManager"><see cref="IStatusManager"/> implementation.</param>
+        /// <param name="secretProvider"><see cref="ISecretProvider"/> implementations.</param>
         /// <remarks>All parameters should be injected by Asp.Net Core.</remarks>
         public RandomGraphAPICaller(
             ILogger<RandomGraphAPICaller> logger,
             IEnumerable<IAPIFunction> apiFunctions,
             IStatusManager statusManager,
-            IEnumerable<ICertificatePasswordProvider> certificatePasswordProviders
+            ISecretProvider secretProvider
         )
         {
             this.logger = logger;
             this.apiFunctions = apiFunctions;
             this.statusManager = statusManager;
-            this.certificatePasswordProviders = certificatePasswordProviders;
+            this.secretProvider = secretProvider;
             this.logger.LogDebug("Found {0} api functions", this.apiFunctions.Count());
         }
 
@@ -57,7 +57,7 @@ namespace E5Renewer.Models.GraphAPIs
         }
 
         /// <inheritdoc/>
-        public async Task CallNextAPIAsync(GraphUser user)
+        public async Task CallNextAPIAsync(User user)
         {
             if (!this.clients.ContainsKey(user))
             {
@@ -66,21 +66,30 @@ namespace E5Renewer.Models.GraphAPIs
                     AuthorityHost = AzureAuthorityHosts.AzurePublicCloud
                 };
                 TokenCredential credential;
-                if (File.Exists(user.certificate))
+                if (user.certificate?.Exists ?? false)
                 {
                     this.logger.LogDebug("Using certificate to get user token.");
-                    string? password = await this.GetPasswordForCertificateAsync(user.certificate);
+                    string? password = await this.secretProvider.GetPasswordForCertificateAsync(user.certificate);
                     if (password is not null)
                     {
                         this.logger.LogDebug("Found password for certificate given.");
                     }
-                    X509Certificate2 certificate = new(user.certificate, password);
-                    credential = new ClientCertificateCredential(user.tenantId, user.clientId, certificate, options);
+                    using (FileStream fileStream = user.certificate.OpenRead())
+                    {
+                        byte[] buffer = new byte[user.certificate.Length];
+                        int size = await fileStream.ReadAsync(buffer);
+                        X509Certificate2 certificate = new(buffer.Take(size).ToArray(), password);
+                        credential = new ClientCertificateCredential(user.tenantId, user.clientId, certificate, options);
+                    }
                 }
-                else
+                else if (!string.IsNullOrEmpty(user.secret))
                 {
                     this.logger.LogDebug("Using secret to get user token.");
                     credential = new ClientSecretCredential(user.tenantId, user.clientId, user.secret, options);
+                }
+                else
+                {
+                    throw new NullReferenceException($"{nameof(user.certificate)} and {nameof(user.secret)} are both invalid.");
                 }
                 GraphServiceClient client = new(credential, ["https://graph.microsoft.com/.default"]);
                 this.clients[user] = client;
@@ -107,9 +116,9 @@ namespace E5Renewer.Models.GraphAPIs
         }
 
         /// <inheritdoc/>
-        public async Task CalmDownAsync(CancellationToken token, GraphUser user)
+        public async Task CalmDownAsync(CancellationToken token, User user)
         {
-            if (user.enabled)
+            if (user.timeToStart == TimeSpan.Zero)
             {
                 const int calmDownMinMilliSeconds = 300000;
                 const int calmDownMaxMilliSeconds = 500000;
@@ -118,19 +127,6 @@ namespace E5Renewer.Models.GraphAPIs
                 this.logger.LogDebug("{0} is going to sleep for {1} millisecond(s)", user.name, milliseconds);
                 await Task.Delay(milliseconds, token);
             }
-        }
-
-        private async Task<string?> GetPasswordForCertificateAsync(string certificate)
-        {
-            foreach (ICertificatePasswordProvider provider in this.certificatePasswordProviders)
-            {
-                string? password = await provider.GetPasswordForCertificateAsync(certificate);
-                if (password is not null)
-                {
-                    return password;
-                }
-            }
-            return null;
         }
     }
 }

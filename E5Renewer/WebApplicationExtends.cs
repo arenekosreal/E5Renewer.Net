@@ -1,38 +1,69 @@
 using System.Text.Json;
 
+using E5Renewer.Controllers;
+using E5Renewer.Models.GraphAPIs;
+using E5Renewer.Models.Modules;
+using E5Renewer.Models.Secrets;
 using E5Renewer.Models.Statistics;
 
 using Microsoft.Extensions.Primitives;
 
 namespace E5Renewer
 {
-    /// <summary>Extends to <see cref="WebApplication">WebApplication</see>.</summary>
-    public static class WebApplicationExtends
+    internal static class WebApplicationExtends
     {
-        /// <summary>Use custom authentication middleware.</summary>
-        /// <param name="app">The WebApplication instance.</param>
-        /// <param name="authToken">The token used for authentication.</param>
-        public static IApplicationBuilder UseAuthTokenAuthentication(this WebApplication app, string authToken)
+        public static IApplicationBuilder UseModulesCheckers(this WebApplication app)
+        {
+            IEnumerable<IModulesChecker> modulesCheckers = app.Services.GetServices<IModulesChecker>();
+            IEnumerable<IUserSecretLoader> userSecretLoaders = app.Services.GetServices<IUserSecretLoader>();
+            IEnumerable<IGraphAPICaller> graphAPICallers = app.Services.GetServices<IGraphAPICaller>();
+            IEnumerable<IModule> otherModules = app.Services.GetServices<IModule>();
+
+            List<IModule> modulesToCheck = new();
+            modulesToCheck.AddRange(modulesCheckers);
+            modulesToCheck.AddRange(userSecretLoaders);
+            modulesToCheck.AddRange(graphAPICallers);
+            modulesToCheck.AddRange(otherModules);
+
+            modulesToCheck.ForEach(
+                (m) =>
+                {
+                    foreach (IModulesChecker checker in modulesCheckers)
+                    {
+
+                        try
+                        {
+                            checker.CheckModules(m);
+                        }
+                        catch { }
+                    }
+                }
+            );
+
+            return app;
+        }
+
+        public static IApplicationBuilder UseAuthTokenAuthentication(this WebApplication app)
         {
             return app.Use(
                 async (context, next) =>
                 {
+                    ISecretProvider secretProvider = app.Services.GetRequiredService<ISecretProvider>();
+                    IDummyResultGenerator dummyResultGenerator = app.Services.GetRequiredService<IDummyResultGenerator>();
                     const string authenticationHeaderName = "Authentication";
                     string? authentication = context.Request.Headers[authenticationHeaderName].FirstOrDefault();
-                    if (authentication == authToken)
+                    if (authentication == await secretProvider.GetRuntimeTokenAsync())
                     {
                         await next();
                         return;
                     }
                     context.Response.StatusCode = StatusCodes.Status403Forbidden;
-                    await context.Response.WriteAsync("Authenticate failed");
+                    InvokeResult result = await dummyResultGenerator.GenerateDummyResultAsync(context);
+                    await context.Response.WriteAsJsonAsync(result);
                 }
             );
         }
 
-        /// <summary>Only allow methods given to connect.</summary>
-        /// <param name="app">The WebApplication instance.</param>
-        /// <param name="methods">The request methods to allow.</param>
         public static IApplicationBuilder UseHttpMethodChecker(this WebApplication app, params string[] methods)
         {
             return app.Use(
@@ -49,9 +80,6 @@ namespace E5Renewer
             );
         }
 
-        /// <summary>Check timestamp in request.</summary>
-        /// <param name="app">The WebApplication instance.</param>
-        /// <param name="allowedMaxSeconds">Max allowed seconds.</param>
         public static IApplicationBuilder UseUnixTimestampChecker(this WebApplication app, uint allowedMaxSeconds = 30)
         {
             return app.Use(
@@ -75,7 +103,8 @@ namespace E5Renewer
                         return;
                     }
                     context.Response.StatusCode = StatusCodes.Status403Forbidden;
-                    await context.Response.WriteAsync("Request is outdated");
+                    InvokeResult result = await app.Services.GetRequiredService<IDummyResultGenerator>().GenerateDummyResultAsync(context);
+                    await context.Response.WriteAsJsonAsync(result);
                 }
             );
         }

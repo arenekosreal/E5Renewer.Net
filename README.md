@@ -30,17 +30,15 @@ A tool to renew e5 subscription by calling msgraph APIs
     </details>
 2. Create Configuration
 
-    Copy [`config.json.example`](./config.json.example) to `config.json`, edit it as your need. You can always add more credentials. Please edit `auth_token` so only people you authenticated can access the statistics.
-
-    We will listen on tcp socket by default, if `listen_addr` is an empty string and your platform supports Unix domain socket, we will listen on Unix domain socket with path `listen_socket` and permission `listen_socket_permission`.
+    Copy [`config.json.example`](./config.json.example) to `config.json`, edit it as your need. You can always add more credentials.
 
     If you want to use certificate instead secret, which is better for security, you can write a `certificate` key with path to your certificate file instead `secret` key.
+    If we find you set `certificate`, it will always be used instead `secret`.
 
-    Tips: We support json, yaml and toml formats, just let their contents be equal, the configuration result is same.
+    Setting days is needed to be cautious, as it means `DayOfWeek` in program, 
+    check [here](https://learn.microsoft.com/en-us/dotnet/api/system.dayofweek#fields) to find out its correct value.
     
-    > [!NOTE]
-    > Due to that C# does not have a native octal number support, we use the `listen_socket_permission` as unix permission directly.
-    > For example, if you are using json format, you need to set it to `438` in order to see socket mode is `rw-rw-rw-`.
+    Tips: We support json, yaml and toml formats, just let their contents be equal, the configuration result is same.
 
 3. Install .NET
 
@@ -53,7 +51,28 @@ A tool to renew e5 subscription by calling msgraph APIs
 
 5. Run program
 
-    Simply run `./E5Renewer` in binaries folder.
+    Simply run `./E5Renewer` in binaries folder with arguments needed.
+    
+    Here are supported arguments:
+    
+    - `--systemd`: If runs in systemd environment, most of the time you should not need it.
+    - `--user-secret`: The path to the user secret file. User secret file is used to storage sensitive information, so please keep it safe.
+    - `--token`: The string to access json api, please keep it safe.
+    - `--token-file`: The file which contains token, please keep that file safe.
+    - `--listen-tcp-socket`: The tcp socket to listen instead default one(`127.0.0.1:5000`).
+    - `--listen-unix-socket-path`: The path to create a unix domain socket to access json api.
+    - `--listen-inux-socket-permission`: The permission to the unix domain socket file.
+    - All AspNet.Core supported arguments. See [here](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/configuration/#command-line) for more info.
+    
+    We will listen on tcp socket `127.0.0.1:5000` by default, if you want to customize it, 
+    you need to set commandline argument `--listen-tcp-socket` like `--listen-tcp-socket=127.0.0.1:8888`.
+    You can also choose listen unix domain socket by setting commandline argument like `--listen-unix-socket-path=/path/to/socket` 
+    and set socket file permission with argument like `--listen-unix-socket-permission=511`.
+    
+    > [!NOTE]
+    > If `--token` and `--token-file` both are specified, we prefer `--token`. If you forget to set nither of them, we use a randomly generated value.
+    > You can find it out in log output after sending any request to the program and meeting a authentication error.
+    > If you want to set unix socket permission, you have to write its actual value instead octal format. For example, using `511` instead `777` is required.
 
 ## Get running statistics
 
@@ -61,6 +80,7 @@ Using `curl` or any tool which can send http request, send request to `http://<l
 each request should be sent with header `Authentication: <auth_token>`.
 You will get json response if everything is fine. If it is a GET request, send milisecond timestamp in query param `timestamp`,
 If it is a POST request, send milisecond timestamp in post json with key `timestamp` and convert it to string.
+Most of the time, we will return json instead plain text, but you need to check response code to see if request is success.
 
 For example:
 

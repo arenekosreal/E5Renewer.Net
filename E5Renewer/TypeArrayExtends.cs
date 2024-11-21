@@ -1,7 +1,7 @@
 namespace E5Renewer
 {
     /// <summary>Extends to <c>Type[]</c></summary>
-    public static class TypeArrayExtends
+    internal static class TypeArrayExtends
     {
         /// <summary>Get types which is not abstract and is assainabble to <typeparamref name="T">T</typeparamref>.</summary>
         /// <param name="types">The array of types.</param>

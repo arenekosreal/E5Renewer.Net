@@ -14,25 +14,24 @@ namespace E5Renewer.Controllers
         private readonly IStatusManager statusManager;
         private readonly IEnumerable<IAPIFunction> apiFunctions;
         private readonly IUnixTimestampGenerator unixTimestampGenerator;
+        private readonly IDummyResultGenerator dummyResponseGenerator;
 
         /// <summary>Initialize controller by logger given.</summary>
         /// <param name="logger">The logger to create logs.</param>
         /// <param name="statusManager">The <see cref="IStatusManager"/> implementation.</param>
         /// <param name="apiFunctions">The <see cref="IAPIFunction"/> implementation.</param>
         /// <param name="unixTimestampGenerator">The <see cref="IUnixTimestampGenerator"/> implementation.</param>
+        /// <param name="dummyResponseGenerator">The <see cref="IDummyResultGenerator"/> implementation.</param>
         /// <remarks>All the params are injected by Asp.Net Core runtime.</remarks>
         public JsonAPIV1Controller(
             ILogger<JsonAPIV1Controller> logger,
             IStatusManager statusManager,
             IEnumerable<IAPIFunction> apiFunctions,
-            IUnixTimestampGenerator unixTimestampGenerator
-        )
-        {
-            this.logger = logger;
-            this.statusManager = statusManager;
-            this.apiFunctions = apiFunctions;
-            this.unixTimestampGenerator = unixTimestampGenerator;
-        }
+            IUnixTimestampGenerator unixTimestampGenerator,
+            IDummyResultGenerator dummyResponseGenerator
+        ) =>
+            (this.logger, this.statusManager, this.apiFunctions, this.unixTimestampGenerator, this.dummyResponseGenerator) =
+            (logger, statusManager, apiFunctions, unixTimestampGenerator, dummyResponseGenerator);
 
         /// <summary>Handler for <c>/v1/list_apis</c>.</summary>
         [HttpGet("list_apis")]
@@ -99,5 +98,10 @@ namespace E5Renewer.Controllers
                 this.unixTimestampGenerator.GetUnixTimestamp()
             );
         }
+
+        /// <summary>Handler for <c>/v1/*</c>.</summary>
+        [Route("{*method}")]
+        public async ValueTask<InvokeResult> Handle() =>
+            await this.dummyResponseGenerator.GenerateDummyResultAsync(this.HttpContext);
     }
 }

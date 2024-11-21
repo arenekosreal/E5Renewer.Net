@@ -1,7 +1,7 @@
 namespace E5Renewer.Models.Modules
 {
     /// <summary>The api interface of checking module.</summary>
-    public interface IModulesChecker : IAspNetModule
+    public interface IModulesChecker : IModule
     {
         /// <summary>Check the module.</summary>
         /// <param name="module">The module to check.</param>

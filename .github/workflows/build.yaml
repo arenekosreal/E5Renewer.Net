@@ -15,6 +15,9 @@ jobs:
           - "macos-latest"
         dotnet:
           - "8.0"
+        arch:
+          - "x64"
+          - "arm64"
     runs-on: ${{ matrix.os }}
     steps:
       - name: "Checkout"
@@ -24,7 +27,7 @@ jobs:
         with:
           dotnet-version: ${{ matrix.dotnet }}
       - name: "Publish binary"
-        run: "dotnet publish"
+        run: "dotnet publish --arch ${{ matrix.arch }}"
       - name: "Get build environment info"
         id: build-env-info
         shell: bash
@@ -33,11 +36,16 @@ jobs:
           python -c 'import platform;print("machine={}".format(platform.machine()))' | tee -a "$GITHUB_OUTPUT"
           # system=ubuntu
           echo system=${{ matrix.os }} | cut -d - -f 1 | tee -a "$GITHUB_OUTPUT"
-
+          # rid=linux-x64
+          case ${{ matrix.os }} in
+            ubuntu-latest) echo rid=linux-${{ matrix.arch }} | tee -a "$GITHUB_OUTPUT";;
+            windows-latest) echo rid=win-${{ matrix.arch }} | tee -a "$GITHUB_OUTPUT";;
+            macos-latest) echo rid=osx-${{ matrix.arch }} | tee -a "$GITHUB_OUTPUT";;
+            *) echo rid=$(dotnet --info | grep RID | cut -d : -f 2 | xargs) | tee -a "$GITHUB_OUTPUT";;
+          esac
       - name: "Construct files"
         run: |
-          cp -r E5Renewer/bin/Release/net${{ matrix.dotnet }}/publish dist
-        
+          cp -r E5Renewer/bin/Release/net${{ matrix.dotnet }}/${{ steps.build-env-info.outputs.rid }}/publish dist   
       - name: "Create archive"
         run: "7z a E5Renewer-${{ steps.build-env-info.outputs.system }}-${{ steps.build-env-info.outputs.machine }}.7z ./dist/*"
       - name: "Upload archive"

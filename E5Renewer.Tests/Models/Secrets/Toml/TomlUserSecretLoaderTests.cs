@@ -9,7 +9,7 @@ namespace E5Renewer.Tests.Models.Secrets.Toml;
 [TestClass]
 public class TomlUserSecretLoaderTests : UserSecretLoaderTests
 {
-    private const string validTomlContentWithSecret = 
+    private const string validTomlContentWithSecret =
         """
         [[users]]
         name="test"
@@ -17,7 +17,7 @@ public class TomlUserSecretLoaderTests : UserSecretLoaderTests
         client_id="test"
         secret="test"
         """;
-    private const string validTomlContentWithSecretAndDays = 
+    private const string validTomlContentWithSecretAndDays =
         """
         [[users]]
         name="test"
@@ -27,7 +27,7 @@ public class TomlUserSecretLoaderTests : UserSecretLoaderTests
         days=[1]
         """;
 
-    private const string invalidTomlContentWithCertificateNotExist = 
+    private const string invalidTomlContentWithCertificateNotExist =
         """
         [[users]]
         name="test"
@@ -35,7 +35,7 @@ public class TomlUserSecretLoaderTests : UserSecretLoaderTests
         client_id="test"
         certificate="not-exist"
         """;
-    private const string invalidTomlContentWithoutSecretOrCertificate = 
+    private const string invalidTomlContentWithoutSecretOrCertificate =
         """
         [[users]]
         name="test"

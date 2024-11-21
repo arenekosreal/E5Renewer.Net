@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 
 using E5Renewer.Models.Statistics;
@@ -18,6 +19,7 @@ namespace E5Renewer.Controllers
             (this.logger, this.unixTimestampGenerator) = (logger, unixTimestampGenerator);
 
         /// <inheritdoc/>
+        [RequiresUnreferencedCode()]
         public async Task<InvokeResult> GenerateDummyResultAsync(HttpContext httpContext)
         {
             Dictionary<string, object?> queries;

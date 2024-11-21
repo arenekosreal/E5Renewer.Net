@@ -1,7 +1,8 @@
 using E5Renewer.Models.Modules;
 
-using NSubstitute;
 using Microsoft.Extensions.Logging;
+
+using NSubstitute;
 
 namespace E5Renewer.Tests.Models.Modules;
 

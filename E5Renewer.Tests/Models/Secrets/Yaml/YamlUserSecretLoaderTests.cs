@@ -52,7 +52,7 @@ public class YamlUserSecretLoaderTests : UserSecretLoaderTests
     /// <summary>Test
     /// <see cref="YamlUserSecretLoader.IsSupported"/>
     /// </summary>
-       [TestMethod]
+    [TestMethod]
     [DataRow("/path/to/yaml", false)]
     [DataRow("/path/to/yml", false)]
     [DataRow("C:\\yaml", false)]

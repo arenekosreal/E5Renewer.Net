@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 
 using E5Renewer.Controllers;
@@ -109,6 +110,7 @@ namespace E5Renewer
             );
         }
 
+        [RequiresUnreferencedCode("Calls System.Text.Json.JsonSerializer.DeserializeAsync<TValue>(Stream, JsonSerializerOptions, CancellationToken)")]
         private static async Task<Dictionary<K, V>> ToDictionary<K, V>(this Stream stream)
             where K : notnull
         {

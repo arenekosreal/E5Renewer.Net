@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 
 using E5Renewer.Controllers;
@@ -14,6 +15,7 @@ namespace E5Renewer
         public static IServiceCollection AddDummyResultGenerator(this IServiceCollection services) =>
             services.AddTransient<IDummyResultGenerator, SimpleDummyResultGenerator>();
 
+        [RequiresUnreferencedCode("Calls System.Reflection.Assembly.GetTypes()")]
         public static IServiceCollection AddAPIFunctionImplementations(this IServiceCollection services)
         {
             IEnumerable<Type> apiFunctionsTypes = Assembly.GetExecutingAssembly().GetTypes()

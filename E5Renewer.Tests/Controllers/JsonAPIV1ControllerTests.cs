@@ -2,10 +2,10 @@ using E5Renewer.Controllers;
 using E5Renewer.Models.GraphAPIs;
 using E5Renewer.Models.Statistics;
 
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
 using NSubstitute;
-using Microsoft.AspNetCore.Http;
 
 namespace E5Renewer.Tests.Controllers;
 

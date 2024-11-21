@@ -1,6 +1,8 @@
 using E5Renewer.Models.Secrets;
-using NSubstitute;
+
 using Microsoft.Extensions.Logging;
+
+using NSubstitute;
 
 namespace E5Renewer.Tests.Models.Secrets;
 

@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.Loader;
 
@@ -16,6 +17,7 @@ namespace E5Renewer.Models.Modules
         }
 
         /// <inheritdoc/>
+        [RequiresUnreferencedCode()]
         protected override Assembly? Load(AssemblyName assemblyName)
         {
             string? assemblyPath = this.resolver.ResolveAssemblyToPath(assemblyName);

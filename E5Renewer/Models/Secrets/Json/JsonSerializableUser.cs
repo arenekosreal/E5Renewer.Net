@@ -1,5 +1,5 @@
-using System.Text.Json.Serialization;
 using System.Collections.Immutable;
+using System.Text.Json.Serialization;
 
 namespace E5Renewer.Models.Secrets.Json
 {

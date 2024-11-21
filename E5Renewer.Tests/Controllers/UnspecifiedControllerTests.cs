@@ -1,8 +1,9 @@
 using E5Renewer.Controllers;
 
-using NSubstitute;
-using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
+
+using NSubstitute;
 
 namespace E5Renewer.Tests.Controllers;
 

@@ -132,7 +132,7 @@ app.UseExceptionHandler(
             {
                 JsonAPIV1Response result = await context.RequestServices.GetRequiredService<IDummyResultGenerator>()
                     .GenerateDummyResultAsync(context);
-                await context.Response.WriteAsJsonAsync(result);
+                await context.Response.WriteAsJsonAsync(result, JsonAPIV1ResponseJsonSerializerContext.Default.JsonAPIV1Response);
             }
         )
 

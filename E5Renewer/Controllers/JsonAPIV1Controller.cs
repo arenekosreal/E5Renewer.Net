@@ -1,3 +1,5 @@
+using System.Collections.ObjectModel;
+
 using E5Renewer.Models.GraphAPIs;
 using E5Renewer.Models.Statistics;
 
@@ -35,50 +37,50 @@ namespace E5Renewer.Controllers
 
         /// <summary>Handler for <c>/v1/list_apis</c>.</summary>
         [HttpGet("list_apis")]
-        public ValueTask<InvokeResult> GetListApis()
+        public ValueTask<JsonAPIV1Response> GetListApis()
         {
             IEnumerable<string> result = this.apiFunctions.
                 Select((c) => c.id);
             logger.LogDebug("Getting result [{0}]", string.Join(", ", result));
-            return ValueTask.FromResult(new InvokeResult(
+            return ValueTask.FromResult(new JsonAPIV1Response(
+                this.unixTimestampGenerator.GetUnixTimestamp(),
                 "list_apis",
-                new(),
                 result,
-                this.unixTimestampGenerator.GetUnixTimestamp()
+                ReadOnlyDictionary<string, string?>.Empty
             ));
         }
 
         /// <summary>Handler for <c>/v1/running_users</c>.</summary>
         [HttpGet("running_users")]
-        public async ValueTask<InvokeResult> GetRunningUsers()
+        public async ValueTask<JsonAPIV1Response> GetRunningUsers()
         {
             IEnumerable<string> result = await this.statusManager.GetRunningUsersAsync();
             logger.LogDebug("Getting result [{0}]", string.Join(", ", result));
             return new(
+                this.unixTimestampGenerator.GetUnixTimestamp(),
                 "running_users",
-                new(),
                 result,
-                this.unixTimestampGenerator.GetUnixTimestamp()
+                ReadOnlyDictionary<string, string?>.Empty
             );
         }
 
         /// <summary>Handler for <c>/v1/waiting_users</c>.</summary>
         [HttpGet("waiting_users")]
-        public async ValueTask<InvokeResult> GetWaitingUsers()
+        public async ValueTask<JsonAPIV1Response> GetWaitingUsers()
         {
             IEnumerable<string> result = await this.statusManager.GetWaitingUsersAsync();
             logger.LogDebug("Getting result [{0}]", string.Join(", ", result));
             return new(
+                this.unixTimestampGenerator.GetUnixTimestamp(),
                 "waiting_users",
-                new(),
                 result,
-                this.unixTimestampGenerator.GetUnixTimestamp()
+                ReadOnlyDictionary<string, string?>.Empty
             );
         }
 
         /// <summary>Handler for <c>/v1/user_results</c>.</summary>
         [HttpGet("user_results")]
-        public async ValueTask<InvokeResult> GetUserResults(
+        public async ValueTask<JsonAPIV1Response> GetUserResults(
             [FromQuery(Name = "user")]
             string userName,
 
@@ -88,20 +90,21 @@ namespace E5Renewer.Controllers
         {
             IEnumerable<string> result = await this.statusManager.GetResultsAsync(userName, apiName);
             logger.LogDebug("Getting result [{0}]", string.Join(", ", result));
+            Dictionary<string, string?> queries = new()
+            {
+                {"user", userName},{"api_name", apiName}
+            };
             return new(
+                this.unixTimestampGenerator.GetUnixTimestamp(),
                 "user_results",
-                new Dictionary<string, object?>()
-                {
-                    { "user", userName }, { "api_name", apiName }
-                },
                 result,
-                this.unixTimestampGenerator.GetUnixTimestamp()
+                new(queries)
             );
         }
 
         /// <summary>Handler for <c>/v1/*</c>.</summary>
         [Route("{*method}")]
-        public async ValueTask<InvokeResult> Handle() =>
+        public async ValueTask<JsonAPIV1Response> Handle() =>
             await this.dummyResponseGenerator.GenerateDummyResultAsync(this.HttpContext);
     }
 }

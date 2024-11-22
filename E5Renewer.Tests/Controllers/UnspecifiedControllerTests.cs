@@ -20,7 +20,7 @@ public class UnspecifiedControllerTests
     {
         ILogger<UnspecifiedController> logger = Substitute.For<ILogger<UnspecifiedController>>();
         IDummyResultGenerator dummyResultGenerator = Substitute.For<IDummyResultGenerator>();
-        InvokeResult result = new();
+        JsonAPIV1Response result = new();
         HttpContext context = new DefaultHttpContext();
         dummyResultGenerator.GenerateDummyResultAsync(context).Returns(Task.FromResult(result));
         dummyResultGenerator.GenerateDummyResult(context).Returns(result);
@@ -34,7 +34,7 @@ public class UnspecifiedControllerTests
     [TestMethod]
     public async Task TestHandle()
     {
-        InvokeResult result = await this.controller.Handle();
+        JsonAPIV1Response result = await this.controller.Handle();
         Assert.AreEqual(new(), result);
     }
 }

@@ -79,7 +79,7 @@ A tool to renew e5 subscription by calling msgraph APIs
 ## Get running statistics
 
 Using `curl` or any tool which can send http request, send request to `http://<listen_addr>:<listen_port>` or unix socket `<listen_socket>`,
-each request should be sent with header `Authentication: <auth_token>`.
+each request should be sent with header `Authorization: Bearer <auth_token>`.
 You will get json response if everything is fine. If it is a GET request, send milisecond timestamp in query param `timestamp`,
 If it is a POST request, send milisecond timestamp in post json with key `timestamp` and convert it to string.
 Most of the time, we will return json instead plain text, but you need to check response code to see if request is success.
@@ -91,7 +91,7 @@ For example:
 <summary>HTTP API for /v1/list_apis</summary>
 
 ```
-curl -H 'Authentication: <auth_token>' -H 'Accept: application/json' \
+curl -H 'Authorization: Bearer <auth_token>' -H 'Accept: application/json' \
     'http://<listen_addr>:<listen_port>/v1/list_apis?timestamp=<timestamp>' | jq '.'
 {
     "method": "list_apis",

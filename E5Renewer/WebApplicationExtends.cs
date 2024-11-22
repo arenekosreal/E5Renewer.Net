@@ -1,5 +1,6 @@
-using System.Diagnostics.CodeAnalysis;
-using System.Text.Json;
+using System.Text.Json.Serialization.Metadata;
+
+using CaseConverter;
 
 using E5Renewer.Controllers;
 using E5Renewer.Models.GraphAPIs;
@@ -13,6 +14,9 @@ namespace E5Renewer
 {
     internal static class WebApplicationExtends
     {
+        private static readonly JsonTypeInfo<JsonAPIV1Response> responseJsonTypeInfo =
+            JsonAPIV1ResponseJsonSerializerContext.Default.JsonAPIV1Response;
+
         public static IApplicationBuilder UseModulesCheckers(this WebApplication app)
         {
             IEnumerable<IModulesChecker> modulesCheckers = app.Services.GetServices<IModulesChecker>();
@@ -51,16 +55,16 @@ namespace E5Renewer
                 {
                     ISecretProvider secretProvider = app.Services.GetRequiredService<ISecretProvider>();
                     IDummyResultGenerator dummyResultGenerator = app.Services.GetRequiredService<IDummyResultGenerator>();
-                    const string authenticationHeaderName = "Authentication";
-                    string? authentication = context.Request.Headers[authenticationHeaderName].FirstOrDefault();
-                    if (authentication == await secretProvider.GetRuntimeTokenAsync())
+                    const string authorizationScheme = "Bearer";
+                    string authorization = context.Request.Headers[nameof(authorization).ToTitleCase()].FirstOrDefault() ?? string.Empty;
+                    if (authorization == $"{authorizationScheme.ToTitleCase()} {await secretProvider.GetRuntimeTokenAsync()}")
                     {
                         await next();
                         return;
                     }
                     context.Response.StatusCode = StatusCodes.Status403Forbidden;
-                    InvokeResult result = await dummyResultGenerator.GenerateDummyResultAsync(context);
-                    await context.Response.WriteAsJsonAsync(result);
+                    JsonAPIV1Response result = await dummyResultGenerator.GenerateDummyResultAsync(context);
+                    await context.Response.WriteAsJsonAsync(result, WebApplicationExtends.responseJsonTypeInfo);
                 }
             );
         }
@@ -86,17 +90,15 @@ namespace E5Renewer
             return app.Use(
                 async (context, next) =>
                 {
-                    const string timestampKey = "timestamp";
-                    string timestampValue = context.Request.Method switch
+                    long timestamp = context.Request.Method switch
                     {
-                        "GET" => context.Request.Query.TryGetValue(timestampKey, out StringValues value) ? value.FirstOrDefault() ?? "" : "",
-                        "POST" => (await context.Request.Body.ToDictionary<string, string>()).TryGetValue(timestampKey, out string? value) ? value ?? "" : "",
-                        _ => ""
+                        "GET" => context.Request.Query.TryGetValue(nameof(timestamp), out StringValues value) &&
+                                 long.TryParse(value, out long parsedValue)
+                                 ? parsedValue : -1,
+                        "POST" => (await context.Request.Body.ToJsonAPIV1RequestAsync()).timestamp,
+                        _ => -1
                     };
-                    if (!long.TryParse(timestampValue, out long timestamp))
-                    {
-                        timestamp = -1;
-                    }
+
                     long timestampNow = app.Services.GetRequiredService<IUnixTimestampGenerator>().GetUnixTimestamp();
                     if ((timestamp > 0) && (timestampNow > timestamp) && (timestampNow - timestamp <= allowedMaxSeconds * 1000))
                     {
@@ -104,17 +106,11 @@ namespace E5Renewer
                         return;
                     }
                     context.Response.StatusCode = StatusCodes.Status403Forbidden;
-                    InvokeResult result = await app.Services.GetRequiredService<IDummyResultGenerator>().GenerateDummyResultAsync(context);
-                    await context.Response.WriteAsJsonAsync(result);
+                    JsonAPIV1Response result = await app.Services.GetRequiredService<IDummyResultGenerator>().GenerateDummyResultAsync(context);
+                    await context.Response.WriteAsJsonAsync(result, WebApplicationExtends.responseJsonTypeInfo);
                 }
             );
         }
 
-        [RequiresUnreferencedCode("Calls System.Text.Json.JsonSerializer.DeserializeAsync<TValue>(Stream, JsonSerializerOptions, CancellationToken)")]
-        private static async Task<Dictionary<K, V>> ToDictionary<K, V>(this Stream stream)
-            where K : notnull
-        {
-            return await JsonSerializer.DeserializeAsync<Dictionary<K, V>>(stream) ?? new();
-        }
     }
 }

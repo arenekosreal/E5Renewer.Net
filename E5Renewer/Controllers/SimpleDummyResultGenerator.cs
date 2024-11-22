@@ -1,5 +1,4 @@
-using System.Diagnostics.CodeAnalysis;
-using System.Text.Json;
+using System.Collections.ObjectModel;
 
 using E5Renewer.Models.Statistics;
 
@@ -19,31 +18,14 @@ namespace E5Renewer.Controllers
             (this.logger, this.unixTimestampGenerator) = (logger, unixTimestampGenerator);
 
         /// <inheritdoc/>
-        [RequiresUnreferencedCode("Calls JsonSerializer.Deserialize<T>(ReadOnlySpan<byte>)")]
-        public async Task<InvokeResult> GenerateDummyResultAsync(HttpContext httpContext)
+        public async Task<JsonAPIV1Response> GenerateDummyResultAsync(HttpContext httpContext)
         {
-            Dictionary<string, object?> queries;
-            switch (httpContext.Request.Method)
+            JsonAPIV1Request input = httpContext.Request.Method switch
             {
-                case "GET":
-                    queries = httpContext.Request.Query.Select(
-                        (kv) => new KeyValuePair<string, object?>(kv.Key, kv.Value.FirstOrDefault() as object)
-                    ).ToDictionary();
-                    break;
-                case "POST":
-                    byte[] buffer = new byte[httpContext.Request.ContentLength ?? httpContext.Request.Body.Length];
-                    int length = await httpContext.Request.Body.ReadAsync(buffer);
-                    byte[] contents = buffer.Take(length).ToArray();
-                    queries = JsonSerializer.Deserialize<Dictionary<string, object?>>(contents) ?? new();
-                    break;
-                default:
-                    queries = new();
-                    break;
-            }
-            if (queries.ContainsKey("timestamp"))
-            {
-                queries.Remove("timestamp");
-            }
+                "GET" => httpContext.Request.Query.ToJsonAPIV1Request(),
+                "POST" => await httpContext.Request.Body.ToJsonAPIV1RequestAsync(),
+                _ => new()
+            };
             string fullPath = httpContext.Request.PathBase + httpContext.Request.Path;
             int lastOfSlash = fullPath.LastIndexOf("/");
             int firstOfQuote = fullPath.IndexOf("?");
@@ -51,14 +33,15 @@ namespace E5Renewer.Controllers
                 firstOfQuote > lastOfSlash ?
                     fullPath.Substring(lastOfSlash + 1, firstOfQuote - lastOfSlash) :
                     fullPath.Substring(lastOfSlash + 1);
-            return new(methodName,
-                    queries,
-                    null,
-                    this.unixTimestampGenerator.GetUnixTimestamp()
+            return new(
+                this.unixTimestampGenerator.GetUnixTimestamp(),
+                methodName,
+                null,
+                input.args ?? ReadOnlyDictionary<string, string?>.Empty
             );
         }
 
         /// <inheritdoc/>
-        public InvokeResult GenerateDummyResult(HttpContext httpContext) => this.GenerateDummyResultAsync(httpContext).Result;
+        public JsonAPIV1Response GenerateDummyResult(HttpContext httpContext) => this.GenerateDummyResultAsync(httpContext).Result;
     }
 }

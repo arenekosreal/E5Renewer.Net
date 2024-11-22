@@ -4,9 +4,9 @@ namespace E5Renewer.Controllers
     public interface IDummyResultGenerator
     {
         /// <summary>Generate a dummy result when something not right.</summary>
-        public Task<InvokeResult> GenerateDummyResultAsync(HttpContext httpContext);
+        public Task<JsonAPIV1Response> GenerateDummyResultAsync(HttpContext httpContext);
 
         /// <summary>Generate a dummy result when something not right.</summary>
-        public InvokeResult GenerateDummyResult(HttpContext httpContext);
+        public JsonAPIV1Response GenerateDummyResult(HttpContext httpContext);
     }
 }

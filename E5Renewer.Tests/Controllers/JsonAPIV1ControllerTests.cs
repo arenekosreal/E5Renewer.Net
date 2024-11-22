@@ -37,7 +37,7 @@ public class JsonAPIV1ControllerTests
         generator.GetUnixTimestamp().Returns((long)42);
 
         IDummyResultGenerator dummyResultGenerator = Substitute.For<IDummyResultGenerator>();
-        InvokeResult dummyResult = new();
+        JsonAPIV1Response dummyResult = new();
         HttpContext context = new DefaultHttpContext();
         dummyResultGenerator.GenerateDummyResultAsync(context).ReturnsForAnyArgs(dummyResult);
         dummyResultGenerator.GenerateDummyResult(context).ReturnsForAnyArgs(dummyResult);
@@ -50,7 +50,7 @@ public class JsonAPIV1ControllerTests
     [TestMethod]
     public async Task TestGetListApis()
     {
-        InvokeResult result = await this.controller.GetListApis();
+        JsonAPIV1Response result = await this.controller.GetListApis();
         Assert.AreEqual(0, result.args.Count);
         Assert.AreEqual("list_apis", result.method);
         string? id = ((IEnumerable<string>?)result.result)?.First();
@@ -62,7 +62,7 @@ public class JsonAPIV1ControllerTests
     [TestMethod]
     public async Task TestGetRunningUsers()
     {
-        InvokeResult result = await this.controller.GetRunningUsers();
+        JsonAPIV1Response result = await this.controller.GetRunningUsers();
         Assert.AreEqual(0, result.args.Count);
         Assert.AreEqual("running_users", result.method);
         string? user = ((IEnumerable<string>?)result.result)?.First();
@@ -74,7 +74,7 @@ public class JsonAPIV1ControllerTests
     [TestMethod]
     public async Task TestGetWaitingUsers()
     {
-        InvokeResult result = await this.controller.GetWaitingUsers();
+        JsonAPIV1Response result = await this.controller.GetWaitingUsers();
         Assert.AreEqual(0, result.args.Count);
         Assert.AreEqual("waiting_users", result.method);
         string? user = ((IEnumerable<string>?)result.result)?.First();
@@ -86,7 +86,7 @@ public class JsonAPIV1ControllerTests
     [TestMethod]
     public async Task TestGetUserResults()
     {
-        InvokeResult result = await this.controller.GetUserResults("testName", "testId");
+        JsonAPIV1Response result = await this.controller.GetUserResults("testName", "testId");
         Assert.AreEqual(2, result.args.Count);
         Assert.AreEqual("testName", result.args["user"]);
         Assert.AreEqual("testId", result.args["api_name"]);
@@ -99,7 +99,7 @@ public class JsonAPIV1ControllerTests
     [TestMethod]
     public async Task TestHandle()
     {
-        InvokeResult result = await this.controller.Handle();
+        JsonAPIV1Response result = await this.controller.Handle();
         Assert.AreEqual(new(), result);
     }
 }

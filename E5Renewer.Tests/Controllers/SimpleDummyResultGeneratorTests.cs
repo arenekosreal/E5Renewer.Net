@@ -32,7 +32,7 @@ public class SimpleDummyResultGeneratorTests
     public async Task TestGenerateDummyResultAsync()
     {
         HttpContext context = new DefaultHttpContext();
-        InvokeResult result = await this.dummyResultGenerator.GenerateDummyResultAsync(context);
+        JsonAPIV1Response result = await this.dummyResultGenerator.GenerateDummyResultAsync(context);
         Assert.AreEqual((long)42, result.timestamp);
     }
     /// <summary>Test
@@ -42,7 +42,7 @@ public class SimpleDummyResultGeneratorTests
     public void TestGenerateDummyResult()
     {
         HttpContext context = new DefaultHttpContext();
-        InvokeResult result = this.dummyResultGenerator.GenerateDummyResult(context);
+        JsonAPIV1Response result = this.dummyResultGenerator.GenerateDummyResult(context);
         Assert.AreEqual((long)42, result.timestamp);
     }
 }

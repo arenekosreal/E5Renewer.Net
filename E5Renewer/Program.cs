@@ -1,7 +1,6 @@
 using System.Net;
 using System.Net.Sockets;
 using System.Reflection;
-using System.Text.Json;
 
 using E5Renewer;
 using E5Renewer.Controllers;
@@ -108,14 +107,14 @@ builder.Services
     .AddControllers()
     .AddJsonOptions(
     (options) =>
-        options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower
+        options.JsonSerializerOptions.TypeInfoResolverChain.Add(JsonAPIV1ResponseJsonSerializerContext.Default)
     )
     .ConfigureApiBehaviorOptions(
         (options) =>
             options.InvalidModelStateResponseFactory =
                 (actionContext) =>
                 {
-                    InvokeResult result = actionContext.HttpContext.RequestServices.GetRequiredService<IDummyResultGenerator>()
+                    JsonAPIV1Response result = actionContext.HttpContext.RequestServices.GetRequiredService<IDummyResultGenerator>()
                             .GenerateDummyResult(actionContext.HttpContext);
                     return new JsonResult(result);
                 }
@@ -131,7 +130,7 @@ app.UseExceptionHandler(
         exceptionHandlerApp.Run(
             async (context) =>
             {
-                InvokeResult result = await context.RequestServices.GetRequiredService<IDummyResultGenerator>()
+                JsonAPIV1Response result = await context.RequestServices.GetRequiredService<IDummyResultGenerator>()
                     .GenerateDummyResultAsync(context);
                 await context.Response.WriteAsJsonAsync(result);
             }

@@ -48,6 +48,7 @@ namespace E5Renewer
         public static IServiceCollection AddUserSecretFile(this IServiceCollection services, FileInfo userSecret) =>
             services.AddKeyedSingleton<FileInfo>(nameof(userSecret), userSecret);
 
+        [RequiresUnreferencedCode("Calls E5Renewer.AssemblyExtends.IterE5RenewerModules()")]
         public static IServiceCollection AddModules(this IServiceCollection services, params Assembly[] assemblies)
         {
             foreach (Assembly assembly in assemblies)

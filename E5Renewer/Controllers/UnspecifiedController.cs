@@ -20,7 +20,7 @@ namespace E5Renewer.Controllers
 
         /// <summary>Handle all unspecified requests.</summary>
         [Route("{*method}")]
-        public async ValueTask<InvokeResult> Handle()
+        public async ValueTask<JsonAPIV1Response> Handle()
         {
             this.logger.LogWarning("Someone called a unspecified path {0}.", this.HttpContext.Request.Path);
             this.HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;

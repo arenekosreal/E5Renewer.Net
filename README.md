@@ -69,14 +69,12 @@ A tool to renew e5 subscription by calling msgraph APIs
     You can also choose listen unix domain socket by setting commandline argument like `--listen-unix-socket-path=/path/to/socket` 
     and set socket file permission with argument like `--listen-unix-socket-permission=511`.
     
-    > [!NOTE]
-    > If `--token` and `--token-file` both are specified, we prefer `--token`. If you forget to set nither of them, we use a randomly generated value.
+> [!NOTE]
+> If `--token` and `--token-file` both are specified, we prefer `--token`. If you forget to set nither of them, we use a randomly generated value.
+> You can find it out in log output after sending any request to the program and meeting a authentication error.
     
-    > [!TIPS]
-    > You can find it out in log output after sending any request to the program and meeting a authentication error.
-    
-    > [!IMPORTANT]
-    > If you want to set unix socket permission, you have to write its actual value instead octal format. For example, using `511` instead `777` is required.
+> [!IMPORTANT]
+> If you want to set unix socket permission, you have to write its actual value instead octal format. For example, using `511` instead `777` is required.
 
 ## Get running statistics
 

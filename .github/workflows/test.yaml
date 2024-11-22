@@ -14,9 +14,9 @@ jobs:
     strategy:
       matrix:
         os:
-          #- "windows-latest"
+          - "windows-latest"
           - "ubuntu-latest"
-          #- "macos-latest"
+          - "macos-latest"
     runs-on: ${{ matrix.os }}
     steps:
       - name: "Checkout"
@@ -25,7 +25,9 @@ jobs:
         uses: "actions/setup-dotnet@v4"
         with:
           dotnet-version: '8'
-      - name: "Check format"
-        run: 'dotnet format --verify-no-changes'
+      - name: "Check whitespace"
+        run: "dotnet format whitespace --verify-no-changes"
+      - name: "Check style"
+        run: 'dotnet format style --verify-no-changes'
       - name: "Run test"
         run: 'dotnet test --collect "XPlat Code Coverage"'

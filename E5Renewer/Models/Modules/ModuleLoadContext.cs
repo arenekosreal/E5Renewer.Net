@@ -17,7 +17,7 @@ namespace E5Renewer.Models.Modules
         }
 
         /// <inheritdoc/>
-        [RequiresUnreferencedCode()]
+        [RequiresUnreferencedCode("Calls AssemblyLoadContext.LoadFromAssemblyPath(string)")]
         protected override Assembly? Load(AssemblyName assemblyName)
         {
             string? assemblyPath = this.resolver.ResolveAssemblyToPath(assemblyName);

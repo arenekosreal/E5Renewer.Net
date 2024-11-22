@@ -19,7 +19,7 @@ namespace E5Renewer.Controllers
             (this.logger, this.unixTimestampGenerator) = (logger, unixTimestampGenerator);
 
         /// <inheritdoc/>
-        [RequiresUnreferencedCode()]
+        [RequiresUnreferencedCode("Calls JsonSerializer.Deserialize<T>(ReadOnlySpan<byte>)")]
         public async Task<InvokeResult> GenerateDummyResultAsync(HttpContext httpContext)
         {
             Dictionary<string, object?> queries;

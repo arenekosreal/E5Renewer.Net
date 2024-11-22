@@ -8,7 +8,7 @@ namespace E5Renewer.Controllers
     {
         /// <value>If this protocol is valid.</value>
         [JsonIgnore]
-        public bool valid { get => timestamp > 0 && !string.IsNullOrEmpty(method) && string.IsNullOrWhiteSpace(method); }
+        public bool valid { get => timestamp > 0 && !string.IsNullOrEmpty(method) && !string.IsNullOrWhiteSpace(method); }
 
         /// <value>The timestamp.</value>
         public long timestamp { get; }

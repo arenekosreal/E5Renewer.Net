@@ -39,12 +39,12 @@ public class JsonAPIV1Controller : ControllerBase
 
     /// <summary>Handler for <c>/v1/list_apis</c>.</summary>
     [HttpGet("list_apis")]
-    public ValueTask<IJsonResponse> GetListApis()
+    public ValueTask<JsonAPIV1Response> GetListApis()
     {
         IEnumerable<string> result = this.apiFunctions.
             Select((c) => c.id);
         logger.LogDebug("Getting result [{0}]", string.Join(", ", result));
-        return ValueTask.FromResult((IJsonResponse)new JsonAPIV1Response(
+        return ValueTask.FromResult(new JsonAPIV1Response(
             this.unixTimestampGenerator.GetUnixTimestamp(),
             "list_apis",
             result,
@@ -54,7 +54,7 @@ public class JsonAPIV1Controller : ControllerBase
 
     /// <summary>Handler for <c>/v1/running_users</c>.</summary>
     [HttpGet("running_users")]
-    public async ValueTask<IJsonResponse> GetRunningUsers()
+    public async ValueTask<JsonAPIV1Response> GetRunningUsers()
     {
         IEnumerable<string> result = await this.statusManager.GetRunningUsersAsync();
         logger.LogDebug("Getting result [{0}]", string.Join(", ", result));
@@ -68,7 +68,7 @@ public class JsonAPIV1Controller : ControllerBase
 
     /// <summary>Handler for <c>/v1/waiting_users</c>.</summary>
     [HttpGet("waiting_users")]
-    public async ValueTask<IJsonResponse> GetWaitingUsers()
+    public async ValueTask<JsonAPIV1Response> GetWaitingUsers()
     {
         IEnumerable<string> result = await this.statusManager.GetWaitingUsersAsync();
         logger.LogDebug("Getting result [{0}]", string.Join(", ", result));
@@ -82,7 +82,7 @@ public class JsonAPIV1Controller : ControllerBase
 
     /// <summary>Handler for <c>/v1/user_results</c>.</summary>
     [HttpGet("user_results")]
-    public async ValueTask<IJsonResponse> GetUserResults(
+    public async ValueTask<JsonAPIV1Response> GetUserResults(
         [FromQuery(Name = "user")]
             string userName,
 
@@ -106,7 +106,7 @@ public class JsonAPIV1Controller : ControllerBase
 
     /// <summary>Handler for <c>/v1/*</c>.</summary>
     [Route("{*method}")]
-    public async ValueTask<IJsonResponse> Handle() =>
-        await this.dummyResponseGenerator.GenerateDummyResultAsync(this.HttpContext);
+    public async ValueTask<JsonAPIV1Response> Handle() =>
+        await this.dummyResponseGenerator.GenerateDummyResultAsync<JsonAPIV1Response>(this.HttpContext);
 }
 

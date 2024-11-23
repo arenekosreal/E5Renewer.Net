@@ -49,7 +49,7 @@ public class JsonAPIV1ControllerTests
     [TestMethod]
     public async Task TestGetListApis()
     {
-        JsonAPIV1Response result = (JsonAPIV1Response)await this.controller.GetListApis();
+        JsonAPIV1Response result = await this.controller.GetListApis();
         Assert.AreEqual(0, result.args.Count);
         Assert.AreEqual("list_apis", result.method);
         string? id = ((IEnumerable<string>?)result.result)?.First();
@@ -61,7 +61,7 @@ public class JsonAPIV1ControllerTests
     [TestMethod]
     public async Task TestGetRunningUsers()
     {
-        JsonAPIV1Response result = (JsonAPIV1Response)await this.controller.GetRunningUsers();
+        JsonAPIV1Response result = await this.controller.GetRunningUsers();
         Assert.AreEqual(0, result.args.Count);
         Assert.AreEqual("running_users", result.method);
         string? user = ((IEnumerable<string>?)result.result)?.First();
@@ -73,7 +73,7 @@ public class JsonAPIV1ControllerTests
     [TestMethod]
     public async Task TestGetWaitingUsers()
     {
-        JsonAPIV1Response result = (JsonAPIV1Response)await this.controller.GetWaitingUsers();
+        JsonAPIV1Response result = await this.controller.GetWaitingUsers();
         Assert.AreEqual(0, result.args.Count);
         Assert.AreEqual("waiting_users", result.method);
         string? user = ((IEnumerable<string>?)result.result)?.First();
@@ -85,7 +85,7 @@ public class JsonAPIV1ControllerTests
     [TestMethod]
     public async Task TestGetUserResults()
     {
-        JsonAPIV1Response result = (JsonAPIV1Response)await this.controller.GetUserResults("testName", "testId");
+        JsonAPIV1Response result = await this.controller.GetUserResults("testName", "testId");
         Assert.AreEqual(2, result.args.Count);
         Assert.AreEqual("testName", result.args["user"]);
         Assert.AreEqual("testId", result.args["api_name"]);
@@ -98,7 +98,7 @@ public class JsonAPIV1ControllerTests
     [TestMethod]
     public async Task TestHandle()
     {
-        JsonAPIV1Response result = (JsonAPIV1Response)await this.controller.Handle();
+        JsonAPIV1Response result = await this.controller.Handle();
         Assert.AreEqual(new(), result);
     }
 }

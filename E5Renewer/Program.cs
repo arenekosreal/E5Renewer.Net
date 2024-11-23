@@ -4,6 +4,7 @@ using System.Reflection;
 
 using E5Renewer;
 using E5Renewer.Controllers;
+using E5Renewer.Controllers.V1;
 using E5Renewer.Models.Modules;
 
 using Microsoft.AspNetCore.Mvc;
@@ -102,7 +103,6 @@ builder.Services
     .AddSecretProvider()
     .AddStatusManager()
     .AddTimeStampGenerator()
-    .AddAPIFunctionImplementations()
     .AddHostedServices()
     .AddControllers()
     .AddJsonOptions(
@@ -114,7 +114,7 @@ builder.Services
             options.InvalidModelStateResponseFactory =
                 (actionContext) =>
                 {
-                    JsonAPIV1Response result = actionContext.HttpContext.RequestServices.GetRequiredService<IDummyResultGenerator>()
+                    IJsonResponse result = actionContext.HttpContext.RequestServices.GetRequiredService<IDummyResultGenerator>()
                             .GenerateDummyResult(actionContext.HttpContext);
                     return new JsonResult(result);
                 }
@@ -130,7 +130,7 @@ app.UseExceptionHandler(
         exceptionHandlerApp.Run(
             async (context) =>
             {
-                JsonAPIV1Response result = await context.RequestServices.GetRequiredService<IDummyResultGenerator>()
+                IJsonResponse result = await context.RequestServices.GetRequiredService<IDummyResultGenerator>()
                     .GenerateDummyResultAsync(context);
                 await context.Response.WriteAsJsonAsync(result, JsonAPIV1ResponseJsonSerializerContext.Default.JsonAPIV1Response);
             }

@@ -11,9 +11,23 @@
     <PackageReference Include="Azure.Identity" Version="1.13.1" />
     <PackageReference Include="CaseConverter" Version="2.0.1" />
     <PackageReference Include="CsToml" Version="1.1.6" />
-    <PackageReference Include="Microsoft.Graph" Version="5.62.0" />
+    <PackageReference Include="Microsoft.Graph" Version="5.63.0" />
     <PackageReference Include="SemanticVersioning" Version="2.0.2" />
     <PackageReference Include="VYaml" Version="0.28.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\E5Renewer.Models.SourceGenerators\E5Renewer.Models.SourceGenerators.csproj">
+        <OutputItemType>Analyzer</OutputItemType>
+        <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\E5Renewer.Controllers.V1\E5Renewer.Controllers.V1.csproj" />
+    <ProjectReference Include="..\E5Renewer.Controllers\E5Renewer.Controllers.csproj" />
+    <ProjectReference Include="..\E5Renewer.Models.BackgroundServices\E5Renewer.Models.BackgroundServices.csproj" />
+    <ProjectReference Include="..\E5Renewer.Models.GraphAPIs\E5Renewer.Models.GraphAPIs.csproj" />
+    <ProjectReference Include="..\E5Renewer.Models.Modules\E5Renewer.Models.Modules.csproj" />
+    <ProjectReference Include="..\E5Renewer.Models.Secrets\E5Renewer.Models.Secrets.csproj" />
+    <ProjectReference Include="..\E5Renewer.Models.Statistics\E5Renewer.Models.Statistics.csproj" />
   </ItemGroup>
 
 </Project>

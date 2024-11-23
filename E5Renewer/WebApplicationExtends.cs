@@ -3,6 +3,7 @@ using System.Text.Json.Serialization.Metadata;
 using CaseConverter;
 
 using E5Renewer.Controllers;
+using E5Renewer.Controllers.V1;
 using E5Renewer.Models.GraphAPIs;
 using E5Renewer.Models.Modules;
 using E5Renewer.Models.Secrets;
@@ -63,7 +64,7 @@ namespace E5Renewer
                         return;
                     }
                     context.Response.StatusCode = StatusCodes.Status403Forbidden;
-                    JsonAPIV1Response result = await dummyResultGenerator.GenerateDummyResultAsync(context);
+                    IJsonResponse result = await dummyResultGenerator.GenerateDummyResultAsync(context);
                     await context.Response.WriteAsJsonAsync(result, WebApplicationExtends.responseJsonTypeInfo);
                 }
             );
@@ -106,7 +107,7 @@ namespace E5Renewer
                         return;
                     }
                     context.Response.StatusCode = StatusCodes.Status403Forbidden;
-                    JsonAPIV1Response result = await app.Services.GetRequiredService<IDummyResultGenerator>().GenerateDummyResultAsync(context);
+                    IJsonResponse result = await app.Services.GetRequiredService<IDummyResultGenerator>().GenerateDummyResultAsync(context);
                     await context.Response.WriteAsJsonAsync(result, WebApplicationExtends.responseJsonTypeInfo);
                 }
             );

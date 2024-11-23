@@ -1,7 +1,7 @@
-using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 
 using E5Renewer.Controllers;
+using E5Renewer.Controllers.V1;
 using E5Renewer.Models.BackgroundServices;
 using E5Renewer.Models.GraphAPIs;
 using E5Renewer.Models.Modules;
@@ -13,19 +13,7 @@ namespace E5Renewer
     internal static class IServiceCollectionExtends
     {
         public static IServiceCollection AddDummyResultGenerator(this IServiceCollection services) =>
-            services.AddTransient<IDummyResultGenerator, SimpleDummyResultGenerator>();
-
-        [RequiresUnreferencedCode("Calls System.Reflection.Assembly.GetTypes()")]
-        public static IServiceCollection AddAPIFunctionImplementations(this IServiceCollection services)
-        {
-            IEnumerable<Type> apiFunctionsTypes = Assembly.GetExecutingAssembly().GetTypes()
-                .GetNonAbstractClassesAssainableTo<IAPIFunction>();
-            foreach (Type t in apiFunctionsTypes)
-            {
-                services.AddSingleton(typeof(IAPIFunction), t);
-            }
-            return services;
-        }
+            services.AddTransient<IDummyResultGenerator, SimpleDummyResultGeneratorV1>();
 
         public static IServiceCollection AddHostedServices(this IServiceCollection services)
         {
@@ -48,7 +36,6 @@ namespace E5Renewer
         public static IServiceCollection AddUserSecretFile(this IServiceCollection services, FileInfo userSecret) =>
             services.AddKeyedSingleton<FileInfo>(nameof(userSecret), userSecret);
 
-        [RequiresUnreferencedCode("Calls E5Renewer.AssemblyExtends.IterE5RenewerModules()")]
         public static IServiceCollection AddModules(this IServiceCollection services, params Assembly[] assemblies)
         {
             foreach (Assembly assembly in assemblies)
@@ -66,6 +53,10 @@ namespace E5Renewer
                     else if (t.IsAssignableTo(typeof(IGraphAPICaller)))
                     {
                         services.AddSingleton(typeof(IGraphAPICaller), t);
+                    }
+                    else if (t.IsAssignableTo(typeof(IAPIFunction)))
+                    {
+                        services.AddSingleton(typeof(IAPIFunction), t);
                     }
                     else if (t.IsAssignableTo(typeof(IModule)))
                     {

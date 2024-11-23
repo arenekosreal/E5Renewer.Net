@@ -58,7 +58,7 @@ public class JsonAPIV1Controller : ControllerBase
     {
         IEnumerable<string> result = await this.statusManager.GetRunningUsersAsync();
         logger.LogDebug("Getting result [{0}]", string.Join(", ", result));
-        return new JsonAPIV1Response(
+        return new(
             this.unixTimestampGenerator.GetUnixTimestamp(),
             "running_users",
             result,
@@ -72,7 +72,7 @@ public class JsonAPIV1Controller : ControllerBase
     {
         IEnumerable<string> result = await this.statusManager.GetWaitingUsersAsync();
         logger.LogDebug("Getting result [{0}]", string.Join(", ", result));
-        return new JsonAPIV1Response(
+        return new(
             this.unixTimestampGenerator.GetUnixTimestamp(),
             "waiting_users",
             result,
@@ -96,7 +96,7 @@ public class JsonAPIV1Controller : ControllerBase
             {
                 {"user", userName},{"api_name", apiName}
             };
-        return new JsonAPIV1Response(
+        return new(
             this.unixTimestampGenerator.GetUnixTimestamp(),
             "user_results",
             result,

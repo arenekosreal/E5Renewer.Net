@@ -38,7 +38,7 @@ A tool to renew e5 subscription by calling msgraph APIs
     Setting days is needed to be cautious, as it means `DayOfWeek` in program, 
     check [here](https://learn.microsoft.com/en-us/dotnet/api/system.dayofweek#fields) to find out its correct value.
   
-> [!TIPS]
+> [!TIP]
 > We support json, yaml and toml formats, just let their contents be equal, the configuration result is same.
 
 3. Install .NET

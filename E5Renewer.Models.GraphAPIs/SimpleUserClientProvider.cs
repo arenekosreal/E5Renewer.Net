@@ -1,11 +1,12 @@
-using E5Renewer.Models.Secrets;
-
-using Microsoft.Graph;
-using Microsoft.Extensions.Logging;
 using System.Security.Cryptography.X509Certificates;
 
 using Azure.Core;
 using Azure.Identity;
+
+using E5Renewer.Models.Secrets;
+
+using Microsoft.Extensions.Logging;
+using Microsoft.Graph;
 
 namespace E5Renewer.Models.GraphAPIs;
 

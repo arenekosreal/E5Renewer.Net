@@ -1,7 +1,4 @@
-using System.Security.Cryptography.X509Certificates;
 
-using Azure.Core;
-using Azure.Identity;
 
 using E5Renewer.Models.Modules;
 using E5Renewer.Models.Secrets;
@@ -22,68 +19,31 @@ public class RandomGraphAPICaller : BasicModule, IGraphAPICaller
     private readonly ILogger<RandomGraphAPICaller> logger;
     private readonly IEnumerable<IAPIFunction> apiFunctions;
     private readonly IStatusManager statusManager;
-    private readonly ISecretProvider secretProvider;
-    private readonly Dictionary<User, GraphServiceClient> clients = new();
+    private readonly IUserClientProvider clientProvider;
 
     /// <summary>Initialize <c>RandomGraphAPICaller</c> with parameters given.</summary>
     /// <param name="logger">The logger to generate log.</param>
     /// <param name="apiFunctions">All known api functions with their id.</param>
     /// <param name="statusManager"><see cref="IStatusManager"/> implementation.</param>
-    /// <param name="secretProvider"><see cref="ISecretProvider"/> implementations.</param>
+    /// <param name="clientProvider"><see cref="IUserClientProvider"/> implementation.</param>
     /// <remarks>All parameters should be injected by Asp.Net Core.</remarks>
     public RandomGraphAPICaller(
         ILogger<RandomGraphAPICaller> logger,
         IEnumerable<IAPIFunction> apiFunctions,
         IStatusManager statusManager,
-        ISecretProvider secretProvider
+        IUserClientProvider clientProvider
     )
     {
         this.logger = logger;
         this.apiFunctions = apiFunctions;
         this.statusManager = statusManager;
-        this.secretProvider = secretProvider;
+        this.clientProvider = clientProvider;
         this.logger.LogDebug("Found {0} api functions", this.apiFunctions.Count());
     }
 
     /// <inheritdoc/>
     public async Task CallNextAPIAsync(User user)
     {
-        if (!this.clients.ContainsKey(user))
-        {
-            ClientCertificateCredentialOptions options = new()
-            {
-                AuthorityHost = AzureAuthorityHosts.AzurePublicCloud
-            };
-            TokenCredential credential;
-            if (user.certificate?.Exists ?? false)
-            {
-                this.logger.LogDebug("Using certificate to get user token.");
-                string? password = await this.secretProvider.GetPasswordForCertificateAsync(user.certificate);
-                if (password is not null)
-                {
-                    this.logger.LogDebug("Found password for certificate given.");
-                }
-                using (FileStream fileStream = user.certificate.OpenRead())
-                {
-                    byte[] buffer = new byte[user.certificate.Length];
-                    int size = await fileStream.ReadAsync(buffer);
-                    X509Certificate2 certificate = new(buffer.Take(size).ToArray(), password);
-                    credential = new ClientCertificateCredential(user.tenantId, user.clientId, certificate, options);
-                }
-            }
-            else if (!string.IsNullOrEmpty(user.secret))
-            {
-                this.logger.LogDebug("Using secret to get user token.");
-                credential = new ClientSecretCredential(user.tenantId, user.clientId, user.secret, options);
-            }
-            else
-            {
-                throw new NullReferenceException($"{nameof(user.certificate)} and {nameof(user.secret)} are both invalid.");
-            }
-            GraphServiceClient client = new(credential, ["https://graph.microsoft.com/.default"]);
-            this.clients[user] = client;
-        }
-
         if (this.apiFunctions.Count() <= 0)
         {
             this.logger.LogError("No {0} is found.", nameof(IAPIFunction));
@@ -99,8 +59,9 @@ public class RandomGraphAPICaller : BasicModule, IGraphAPICaller
             return successCount + 1; // let weight greater than zero
         }
 
+        GraphServiceClient client = await this.clientProvider.GetClientForUserAsync(user);
         IAPIFunction apiFunction = this.apiFunctions.GetDifferentItemsByWeight(GetFunctionWeightOfCurrentUser, 1).First();
-        APICallResult result = await apiFunction.SafeCallAsync(this.clients[user], user.name);
+        APICallResult result = await apiFunction.SafeCallAsync(client, user.name);
         await this.statusManager.SetResultAsync(user.name, apiFunction.id, result.ToString());
     }
 

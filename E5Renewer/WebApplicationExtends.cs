@@ -23,12 +23,14 @@ namespace E5Renewer
             IEnumerable<IModulesChecker> modulesCheckers = app.Services.GetServices<IModulesChecker>();
             IEnumerable<IUserSecretLoader> userSecretLoaders = app.Services.GetServices<IUserSecretLoader>();
             IEnumerable<IGraphAPICaller> graphAPICallers = app.Services.GetServices<IGraphAPICaller>();
+            IEnumerable<IAPIFunction> apiFunctions = app.Services.GetServices<IAPIFunction>();
             IEnumerable<IModule> otherModules = app.Services.GetServices<IModule>();
 
             List<IModule> modulesToCheck = new();
             modulesToCheck.AddRange(modulesCheckers);
             modulesToCheck.AddRange(userSecretLoaders);
             modulesToCheck.AddRange(graphAPICallers);
+            modulesToCheck.AddRange(apiFunctions);
             modulesToCheck.AddRange(otherModules);
 
             modulesToCheck.ForEach(

@@ -106,6 +106,7 @@ builder.Services
     .AddSecretProvider()
     .AddStatusManager()
     .AddTimeStampGenerator()
+    .AddUserClientProvider()
     .AddHostedServices()
     .AddControllers()
     .AddJsonOptions(

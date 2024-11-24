@@ -12,6 +12,8 @@ namespace E5Renewer
 {
     internal static class IServiceCollectionExtends
     {
+        public static IServiceCollection AddUserClientProvider(this IServiceCollection services) =>
+            services.AddSingleton<IUserClientProvider, SimpleUserClientProvider>();
         public static IServiceCollection AddDummyResultGenerator(this IServiceCollection services) =>
             services.AddTransient<IDummyResultGenerator, SimpleDummyResultGeneratorV1>();
 
@@ -44,23 +46,23 @@ namespace E5Renewer
                 {
                     if (t.IsAssignableTo(typeof(IModulesChecker)))
                     {
-                        services.AddSingleton(typeof(IModulesChecker), t);
+                        services.AddTransient(typeof(IModulesChecker), t);
                     }
                     else if (t.IsAssignableTo(typeof(IUserSecretLoader)))
                     {
-                        services.AddSingleton(typeof(IUserSecretLoader), t);
+                        services.AddTransient(typeof(IUserSecretLoader), t);
                     }
                     else if (t.IsAssignableTo(typeof(IGraphAPICaller)))
                     {
-                        services.AddSingleton(typeof(IGraphAPICaller), t);
+                        services.AddTransient(typeof(IGraphAPICaller), t);
                     }
                     else if (t.IsAssignableTo(typeof(IAPIFunction)))
                     {
-                        services.AddSingleton(typeof(IAPIFunction), t);
+                        services.AddTransient(typeof(IAPIFunction), t);
                     }
                     else if (t.IsAssignableTo(typeof(IModule)))
                     {
-                        services.AddSingleton(typeof(IModule), t);
+                        services.AddTransient(typeof(IModule), t);
                     }
                 }
             }

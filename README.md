@@ -37,8 +37,9 @@ A tool to renew e5 subscription by calling msgraph APIs
 
     Setting days is needed to be cautious, as it means `DayOfWeek` in program, 
     check [here](https://learn.microsoft.com/en-us/dotnet/api/system.dayofweek#fields) to find out its correct value.
-    
-    Tips: We support json, yaml and toml formats, just let their contents be equal, the configuration result is same.
+  
+> [!TIPS]
+> We support json, yaml and toml formats, just let their contents be equal, the configuration result is same.
 
 3. Install .NET
 
@@ -47,7 +48,7 @@ A tool to renew e5 subscription by calling msgraph APIs
 4. Get program
 
     You can download prebuilt program at [Release](https://github.com/arenekosreal/E5Renewer.Net/releases) page, simply choose which one you want, download it, unpack it and run it.
-    If you want to build from source, you can run `dotnet publish` and you will find binaries at `bin/Release/net8.0`.
+    If you want to [build](#build) from source, you can run `dotnet publish` and you will find binaries at `bin/Release/net8.0`.
 
 5. Run program
 
@@ -75,6 +76,10 @@ A tool to renew e5 subscription by calling msgraph APIs
     
 > [!IMPORTANT]
 > If you want to set unix socket permission, you have to write its actual value instead octal format. For example, using `511` instead `777` is required.
+
+## Build
+
+Run `dotnet publish -c Release` and you can get binary at `E5Renewer/bin/Release/net8.0/publish`
 
 ## Get running statistics
 

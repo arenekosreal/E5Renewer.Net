@@ -2,8 +2,8 @@ using E5Renewer.Models.GraphAPIs;
 using E5Renewer.Models.Secrets;
 using E5Renewer.Models.Statistics;
 
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace E5Renewer.Models.BackgroundServices
 {

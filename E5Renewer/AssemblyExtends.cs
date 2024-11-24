@@ -8,17 +8,9 @@ namespace E5Renewer
     {
         public static IEnumerable<Type> IterE5RenewerModules(this Assembly assembly)
         {
-            ModulesInAssemblyAttribute? attribute = assembly.GetCustomAttribute<ModulesInAssemblyAttribute>();
-            if (attribute is not null)
-            {
-                foreach (Type t in attribute.types.GetNonAbstractClassesAssainableTo<IModule>())
-                {
-                    if (t.IsDefined(typeof(ModuleAttribute)))
-                    {
-                        yield return t;
-                    }
-                }
-            }
+            return assembly.GetCustomAttributes<ModulesInAssemblyAttribute>()
+                .SelectMany((t) => t.types.GetNonAbstractClassesAssainableTo<IModule>())
+                .Where((t) => t.IsDefined(typeof(ModuleAttribute)));
         }
     }
 }

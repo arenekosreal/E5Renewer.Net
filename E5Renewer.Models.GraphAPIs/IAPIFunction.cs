@@ -1,9 +1,8 @@
 using E5Renewer.Models.Modules;
-using E5Renewer.Models.Statistics;
 
+using Microsoft.Extensions.Logging;
 using Microsoft.Graph;
 using Microsoft.Graph.Models.ODataErrors;
-using Microsoft.Extensions.Logging;
 
 namespace E5Renewer.Models.GraphAPIs;
 

@@ -7,8 +7,8 @@ using E5Renewer.Models.Modules;
 using E5Renewer.Models.Secrets;
 using E5Renewer.Models.Statistics;
 
-using Microsoft.Graph;
 using Microsoft.Extensions.Logging;
+using Microsoft.Graph;
 
 namespace E5Renewer.Models.GraphAPIs;
 

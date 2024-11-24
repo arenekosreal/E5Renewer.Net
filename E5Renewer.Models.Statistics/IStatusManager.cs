@@ -1,8 +1,7 @@
 ﻿namespace E5Renewer.Models.Statistics;
 
 /// <summary>
-/// The api interface to manage user status and
-/// <see cref="APICallResult">APICallResult</see>.
+/// The api interface to manage user status.
 /// </summary>
 public interface IStatusManager
 {

@@ -65,7 +65,10 @@ builder.WebHost.ConfigureKestrel(
     }
 );
 
-builder.Services.AddModules(Assembly.GetExecutingAssembly());
+if (Assembly.GetEntryAssembly() is Assembly entryAssembly)
+{
+    builder.Services.AddModules(entryAssembly);
+}
 IEnumerable<Assembly> assemblies = GetPossibleModulesPaths().
 Select(
     (directory) =>

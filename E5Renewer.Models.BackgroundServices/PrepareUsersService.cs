@@ -41,37 +41,38 @@ namespace E5Renewer.Models.BackgroundServices
         /// <inheritdoc/>
         protected override async Task ExecuteAsync(CancellationToken token)
         {
-            IEnumerable<User> users =
-                (await this.secretProvider.GetUserSecretAsync()).users;
-            // TODO: Parallel?
-            foreach (User user in users)
+            IEnumerable<Task> tasks =
+                (await this.secretProvider.GetUserSecretAsync()).users
+                    .Select((user) => this.BlockForUser(user, token));
+            await Task.WhenAll(tasks);
+        }
+
+        private async Task BlockForUser(User user, CancellationToken token)
+        {
+            while (!token.IsCancellationRequested && user.valid)
             {
-                while (!token.IsCancellationRequested && user.valid)
+                bool enabled = user.timeToStart == TimeSpan.Zero;
+                await this.statusManager.SetUserStatusAsync(user.name, enabled);
+                if (enabled)
                 {
-                    bool enabled = user.timeToStart == TimeSpan.Zero;
-                    await this.statusManager.SetUserStatusAsync(user.name, enabled);
-                    if (enabled)
+                    if (!this.callerCache.ContainsKey(user))
                     {
-                        if (!this.callerCache.ContainsKey(user))
-                        {
-                            Random random = new();
-                            this.callerCache[user] = random.GetItems(this.apiCallers.ToArray(), 1)[0];
-                        }
-                        await this.callerCache[user].CallNextAPIAsync(user);
-                        await this.callerCache[user].CalmDownAsync(token, user);
+                        Random random = new();
+                        this.callerCache[user] = random.GetItems(this.apiCallers.ToArray(), 1)[0];
                     }
-                    else
-                    {
-                        TimeSpan delay = user.timeToStart;
-                        this.logger.LogDebug(
-                            "Sleeping for {0} day(s), {1} hour(s), {2} miniute(s), {3} second(s) and {4} millisecond(s) to wait starting user {5}...",
-                                delay.Days, delay.Hours, delay.Minutes, delay.Seconds, delay.Milliseconds, user.name
-                        );
-                        await Task.Delay(delay, token);
-                    }
+                    await this.callerCache[user].CallNextAPIAsync(user);
+                    await this.callerCache[user].CalmDownAsync(token, user);
+                }
+                else
+                {
+                    TimeSpan delay = user.timeToStart;
+                    this.logger.LogDebug(
+                        "Sleeping for {0} day(s), {1} hour(s), {2} miniute(s), {3} second(s) and {4} millisecond(s) to wait starting user {5}...",
+                            delay.Days, delay.Hours, delay.Minutes, delay.Seconds, delay.Milliseconds, user.name
+                    );
+                    await Task.Delay(delay, token);
                 }
             }
-
         }
     }
 }

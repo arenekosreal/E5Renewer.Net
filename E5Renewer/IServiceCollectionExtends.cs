@@ -40,30 +40,23 @@ namespace E5Renewer
 
         public static IServiceCollection AddModules(this IServiceCollection services, params Assembly[] assemblies)
         {
-            foreach (Assembly assembly in assemblies)
+            Type[] knownModulesTypes = [
+                typeof(IModulesChecker),
+                typeof(IUserSecretLoader),
+                typeof(IGraphAPICaller),
+                typeof(IAPIFunction)
+            ];
+            foreach (Type t in assemblies.SelectMany((assembly) => assembly.IterE5RenewerModules()))
             {
-                foreach (Type t in assembly.IterE5RenewerModules())
+                ServiceDescriptor service = ServiceDescriptor.Transient(
+                    knownModulesTypes.FirstOrDefault(
+                        (kt) => t.IsAssignableTo(kt),
+                        typeof(IModule)),
+                    t
+                );
+                if (!services.Contains(service))
                 {
-                    if (t.IsAssignableTo(typeof(IModulesChecker)))
-                    {
-                        services.AddTransient(typeof(IModulesChecker), t);
-                    }
-                    else if (t.IsAssignableTo(typeof(IUserSecretLoader)))
-                    {
-                        services.AddTransient(typeof(IUserSecretLoader), t);
-                    }
-                    else if (t.IsAssignableTo(typeof(IGraphAPICaller)))
-                    {
-                        services.AddTransient(typeof(IGraphAPICaller), t);
-                    }
-                    else if (t.IsAssignableTo(typeof(IAPIFunction)))
-                    {
-                        services.AddTransient(typeof(IAPIFunction), t);
-                    }
-                    else if (t.IsAssignableTo(typeof(IModule)))
-                    {
-                        services.AddTransient(typeof(IModule), t);
-                    }
+                    services.Add(service);
                 }
             }
             return services;

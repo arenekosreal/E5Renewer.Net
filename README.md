@@ -179,4 +179,9 @@ Server will only accept request less than **30 seconds** older than server time.
 
 See [http-api.md](./http-api.md) for possible apis
 
-**Note:** This program supports **HTTP** only, and it is insecure. Please use a reverse proxy tool like `nginx` or `apache` in front of it to transfer data through untrusted environment.
+> [!NOTE]
+> This program supports **HTTP** only, and it is insecure. Please use a reverse proxy tool like `nginx` or `apache` in front of it to transfer data through untrusted environment.
+
+## Modules
+
+We have created a module system to extend the program, you can check [modules.md](./modules.md) for more info.

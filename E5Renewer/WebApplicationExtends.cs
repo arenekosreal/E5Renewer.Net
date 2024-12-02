@@ -6,6 +6,7 @@ using E5Renewer.Controllers;
 using E5Renewer.Controllers.V1;
 using E5Renewer.Models.GraphAPIs;
 using E5Renewer.Models.Modules;
+using E5Renewer.Models.ModulesCheckers;
 using E5Renewer.Models.Secrets;
 using E5Renewer.Models.Statistics;
 

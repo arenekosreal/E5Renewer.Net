@@ -1,8 +1,10 @@
+using E5Renewer.Models.Modules;
+
 using Microsoft.Extensions.Logging;
 
 using NSubstitute;
 
-namespace E5Renewer.Models.Modules.Tests;
+namespace E5Renewer.Models.ModulesCheckers.Tests;
 
 /// <summary>Test
 /// <see cref="DeprecatedModulesChecker"/>

@@ -736,6 +736,8 @@
     <ProjectReference Include="..\E5Renewer.Models.Secrets.Json\E5Renewer.Models.Secrets.Json.csproj" />
     <ProjectReference Include="..\E5Renewer.Models.Secrets.Toml\E5Renewer.Models.Secrets.Toml.csproj" />
     <ProjectReference Include="..\E5Renewer.Models.Secrets.Yaml\E5Renewer.Models.Secrets.Yaml.csproj" />
+    <ProjectReference Include="..\E5Renewer.Models.ModulesCheckers\E5Renewer.Models.ModulesCheckers.csproj" />
+    <ProjectReference Include="..\E5Renewer.Models.SourceGenerators.AssemblyContainsModuleGenerator\E5Renewer.Models.SourceGenerators.AssemblyContainsModuleGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
   </ItemGroup>
 
 </Project>

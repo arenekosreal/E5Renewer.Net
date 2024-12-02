@@ -25,7 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\E5Renewer.Models.BackgroundServices\E5Renewer.Models.BackgroundServices.csproj" />
+    <ProjectReference Include="..\E5Renewer.Models.ModulesCheckers\E5Renewer.Models.ModulesCheckers.csproj" />
   </ItemGroup>
 
 </Project>

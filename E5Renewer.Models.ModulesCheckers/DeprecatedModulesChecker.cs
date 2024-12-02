@@ -1,6 +1,8 @@
+using E5Renewer.Models.Modules;
+
 using Microsoft.Extensions.Logging;
 
-namespace E5Renewer.Models.Modules;
+namespace E5Renewer.Models.ModulesCheckers;
 
 /// <summary>Check if the module is deprecated.</summary>
 [Module]
@@ -23,4 +25,3 @@ public class DeprecatedModulesChecker : BasicModule, IModulesChecker
         }
     }
 }
-

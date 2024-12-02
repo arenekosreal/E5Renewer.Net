@@ -4,7 +4,7 @@ Hello, very glad to know that you are going to make contributions to this projec
 
 Before you want to change the repository, please make a fork, everything listed below is done in your fork.
 
-We think you have already read [README.md](README.md) about how to setup poetry and python environment.
+We think you have already read [README.md](README.md) about how to setup dotnet environment.
 But if we are wrong, please feel free to go there to setup dotnet environment.
 Here are steps to prepare a development environment:
 
@@ -17,7 +17,7 @@ Please do not forget to add some tests for your changes, this is optional but he
 In a world, you need using `camelCase` for variables, using `PascalCase` for classes and Functions, using `kebab-case` for commandline arguments, and the last one, using `snake_case` for http apis and configurations.
 
 After you finish your masterpiece, don't hurry to commit and push directly, please run `dotnet test` to make sure all tests are passed.
-We have set running ruff to check code format and quality, so if theres something wrong raised by ruff, please follow outputs to fix it.
+You also need to run `dotnet format` to check if there is any format issue or analyzer warning.
 
 After no error is raised, you can `git add` and `git commit` your changes.
 We have no many rules/limits on commit message, just one request: let us know what you are doing in the commit.

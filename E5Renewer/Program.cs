@@ -65,12 +65,10 @@ builder.WebHost.ConfigureKestrel(
     }
 );
 
-if (Assembly.GetEntryAssembly() is Assembly entryAssembly)
-{
-    IEnumerable<Assembly> assembliesInAttribute = entryAssembly.GetCustomAttributes<AssemblyContainsModuleAttribute>()
-        .Select((attribute) => attribute.assembly);
-    builder.Services.AddModules(assembliesInAttribute.ToArray());
-}
+IEnumerable<Assembly> assembliesInAttribute = Assembly.GetExecutingAssembly()
+    .GetCustomAttributes<AssemblyContainsModuleAttribute>()
+    .Select((attribute) => attribute.assembly);
+builder.Services.AddModules(assembliesInAttribute.ToArray());
 IEnumerable<Assembly> assemblies = GetPossibleModulesPaths().
 Select(
     (directory) =>

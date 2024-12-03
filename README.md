@@ -11,8 +11,17 @@ A tool to renew e5 subscription by calling msgraph APIs
 
     See [Register Application](https://learn.microsoft.com/graph/auth-register-app-v2) and [Configure Permissions](https://learn.microsoft.com/graph/auth-v2-service#2-configure-permissions-for-microsoft-graph) for more info. We need `tenant id`, `client id` and `client secret` of your application to access msgraph APIs.
 
+2. Create User Secrer File
+
+    Copy [`user-secret.json.example`](./user-secret.json.example) to `user-secret.json`, edit it as your need. 
+    You can always add more credentials.
+
+    If you want to use certificate instead secret, which is better for security, 
+    you can write a `certificate` key with path to your certificate file instead `secret` key.
+    If we find you set `certificate`, it will always be used instead `secret`.
+
     <details>
-    <summary>Tips for people who like certificate instead secret:</summary>
+    <summary>Tips for people who prefer certificate instead secret:</summary>
 
     - If you add certificate after created application and added secret, the `client_id` may be changed so please update it.
     - Using pfx format to this tool is tested. But you only need to upload public key part(*.crt) to Azure.
@@ -28,18 +37,13 @@ A tool to renew e5 subscription by calling msgraph APIs
 
       `<sha512sum>` is the sha512 sum of the certificate file in lower case and `<password>` is its password in **plain**, please keep the configuration in secret to avoid someone using your certificate without being permitted.
     </details>
-2. Create Configuration
-
-    Copy [`config.json.example`](./config.json.example) to `config.json`, edit it as your need. You can always add more credentials.
-
-    If you want to use certificate instead secret, which is better for security, you can write a `certificate` key with path to your certificate file instead `secret` key.
-    If we find you set `certificate`, it will always be used instead `secret`.
 
     Setting days is needed to be cautious, as it means `DayOfWeek` in program, 
     check [here](https://learn.microsoft.com/en-us/dotnet/api/system.dayofweek#fields) to find out its correct value.
   
 > [!TIP]
-> We support json, yaml and toml formats, just let their contents be equal, the configuration result is same.
+> We support json, yaml and toml formats for now, althouth we use json as an example, you can always use other formats.
+> The formats supported by us can even be extended by using [modules](#modules)
 
 3. Install .NET
 
@@ -56,16 +60,16 @@ A tool to renew e5 subscription by calling msgraph APIs
     Here are supported arguments:
     
     - `--systemd`: If runs in systemd environment, most of the time you should not need it.
-    - `--user-secret`: The path to the user secret file. User secret file is used to storage sensitive information, so please keep it safe.
-    - `--token`: The string to access json api, please keep it safe.
-    - `--token-file`: The file which contains token, please keep that file safe.
+    - `--user-secret`: The path to the user secret file.
+    - `--token`: The string to access json api.
+    - `--token-file`: The file which first line is used as the token.
     - `--listen-tcp-socket`: The tcp socket to listen instead default one(`127.0.0.1:5000`).
     - `--listen-unix-socket-path`: The path to create a unix domain socket to access json api.
     - `--listen-inux-socket-permission`: The permission to the unix domain socket file.
     - All AspNet.Core supported arguments. See [here](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/configuration/#command-line) for more info.
     
-    We will listen on tcp socket `127.0.0.1:5000` by default, if you want to customize it, 
-    you need to set commandline argument `--listen-tcp-socket` like `--listen-tcp-socket=127.0.0.1:8888`.
+    We will listen on tcp socket `127.0.0.1:5000` by default, this is the default value of AspNet.Core.
+    If you want to customize it, you need to set commandline argument `--listen-tcp-socket` like `--listen-tcp-socket=127.0.0.1:8888`.
     You can also choose listen unix domain socket by setting commandline argument like `--listen-unix-socket-path=/path/to/socket` 
     and set socket file permission with argument like `--listen-unix-socket-permission=511`.
     
@@ -179,7 +183,7 @@ Server will only accept request less than **30 seconds** older than server time.
 See [http-api.md](./http-api.md) for possible apis
 
 > [!NOTE]
-> This program plans to support **HTTP** only, and it is insecure. 
+> This program plans to support **HTTP** only for now, and it is insecure. 
 > Please use a reverse proxy tool like `nginx` or `apache` to transfer data through untrusted environment.
 > Althouth Asp.Net Core supports https and you can enable it through Asp.Net Core configuration, 
 > we do not guarantee its availability.

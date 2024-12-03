@@ -25,7 +25,7 @@ A tool to renew e5 subscription by calling msgraph APIs
 
     - If you add certificate after created application and added secret, the `client_id` may be changed so please update it.
     - Using pfx format to this tool is tested. But you only need to upload public key part(*.crt) to Azure.
-    - If your certificate has a password, you can create a `passwords` key in config like this:
+    - If your certificate has a password, you can create a `passwords` key in user secret file like this:
 
       ```json
       {
@@ -68,10 +68,15 @@ A tool to renew e5 subscription by calling msgraph APIs
     - `--listen-inux-socket-permission`: The permission to the unix domain socket file.
     - All AspNet.Core supported arguments. See [here](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/configuration/#command-line) for more info.
     
-    We will listen on tcp socket `127.0.0.1:5000` by default, this is the default value of AspNet.Core.
+    We will listen on tcp socket `127.0.0.1:5000` by default, this is the default value of AspNet Core.
     If you want to customize it, you need to set commandline argument `--listen-tcp-socket` like `--listen-tcp-socket=127.0.0.1:8888`.
+
     You can also choose listen unix domain socket by setting commandline argument like `--listen-unix-socket-path=/path/to/socket` 
     and set socket file permission with argument like `--listen-unix-socket-permission=511`.
+    Unix Domain Socket will be enabled if your OS supports it and you set it here.
+
+    Asp.Net Core supports `--url` parameter to set listen endpoint, such as `--url=http://127.0.0.1:5001` or `--url=http://unix:/path/to/socket`.
+    But setting unix domain socket's permission supports set by `--listen-unix-socket-path` only for now.
     
 > [!NOTE]
 > If `--token` and `--token-file` both are specified, we prefer `--token`. If you forget to set neither of them, we use a randomly generated value.

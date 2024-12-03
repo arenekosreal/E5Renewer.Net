@@ -75,7 +75,7 @@ A tool to renew e5 subscription by calling msgraph APIs
     and set socket file permission with argument like `--listen-unix-socket-permission=511`.
     Unix Domain Socket will be enabled if your OS supports it and you set it here.
 
-    Asp.Net Core supports `--url` parameter to set listen endpoint, such as `--url=http://127.0.0.1:5001` or `--url=http://unix:/path/to/socket`.
+    Asp.Net Core supports `--urls` parameter to set listen endpoint, such as `--urls=http://127.0.0.1:5001` or `--urls=http://unix:/path/to/socket`.
     But setting unix domain socket's permission supports set by `--listen-unix-socket-path` only for now.
     
 > [!NOTE]

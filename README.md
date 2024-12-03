@@ -63,20 +63,27 @@ A tool to renew e5 subscription by calling msgraph APIs
     - `--user-secret`: The path to the user secret file.
     - `--token`: The string to access json api.
     - `--token-file`: The file which first line is used as the token.
-    - `--listen-tcp-socket`: The tcp socket to listen instead default one(`127.0.0.1:5000`).
-    - `--listen-unix-socket-path`: The path to create a unix domain socket to access json api.
-    - `--listen-inux-socket-permission`: The permission to the unix domain socket file.
+    - `--listen-unix-socket-permission`: The permission to the unix domain socket file.
     - All AspNet.Core supported arguments. See [here](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/configuration/#command-line) for more info.
     
-    We will listen on tcp socket `127.0.0.1:5000` by default, this is the default value of AspNet Core.
-    If you want to customize it, you need to set commandline argument `--listen-tcp-socket` like `--listen-tcp-socket=127.0.0.1:8888`.
+    We will listen on endpoint `http://127.0.0.1:5000` by default, this is the default value of Asp.Net Core.
 
-    You can also choose listen unix domain socket by setting commandline argument like `--listen-unix-socket-path=/path/to/socket` 
-    and set socket file permission with argument like `--listen-unix-socket-permission=511`.
-    Unix Domain Socket will be enabled if your OS supports it and you set it here.
+    Asp.Net Core supports `--urls` parameter to set customized listen endpoint, 
+    such as `--urls=http://127.0.0.1:5001` or `--urls=http://unix:/path/to/socket`.
+    Unix Domain Socket file's permission can be customized with argument `--listen-unix-socket-permission`,
+    but this only works on non-Windows platform because `File.SetUnixFileMode(string, UnixFileMode)` is used to set permission,
+    while it does not work on Windows.
 
-    Asp.Net Core supports `--urls` parameter to set listen endpoint, such as `--urls=http://127.0.0.1:5001` or `--urls=http://unix:/path/to/socket`.
-    But setting unix domain socket's permission supports set by `--listen-unix-socket-path` only for now.
+    Those customized arguments are actually Asp.Net Core configuration items, items' names are the camelCase of arguments.
+    For example, `--token` will be mapped to `token`, `--user-secret` will be mapped to `userSecret`, 
+    and `--listen-unix-socket-permission` will be mapped to `listenUnixSocketPermission`.
+    With this converting map, you can use Asp.Net Core's ways to provide them, 
+    such as json configuration, environment variable, etc.
+    But there is a special case: `--systemd` should be provided with `systemd=true` if you do not use commandline argument,
+    as Asp.Net Core's configuration requires a value, we added a special check for the `--systemd` flag.
+    Those customized arguments do not have short forms like `-s`, `-u`.
+
+    `--user-secret` is required to be provided, or a `NullReferenceException` of `userSecret` will be thown.
     
 > [!NOTE]
 > If `--token` and `--token-file` both are specified, we prefer `--token`. If you forget to set neither of them, we use a randomly generated value.
@@ -186,12 +193,6 @@ curl -H 'Authorization: Bearer <auth_token>' -H 'Accept: application/json' \
 Server will only accept request less than **30 seconds** older than server time.
 
 See [http-api.md](./http-api.md) for possible apis
-
-> [!NOTE]
-> This program plans to support **HTTP** only for now, and it is insecure. 
-> Please use a reverse proxy tool like `nginx` or `apache` to transfer data through untrusted environment.
-> Althouth Asp.Net Core supports https and you can enable it through Asp.Net Core configuration, 
-> we do not guarantee its availability.
 
 ## Modules
 

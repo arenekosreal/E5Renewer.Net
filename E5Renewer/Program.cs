@@ -13,12 +13,9 @@ const UnixFileMode defaultListenUnixSocketPermission =
     UnixFileMode.UserRead | UnixFileMode.UserWrite |
     UnixFileMode.GroupRead | UnixFileMode.GroupWrite |
     UnixFileMode.OtherRead | UnixFileMode.OtherWrite;
-bool setSocketPermission = false;
 
 // Variables from Configuration
 bool systemd;
-IPEndPoint? listenTcpSocket;
-string? listenUnixSocketPath;
 UnixFileMode listenUnixSocketPermission;
 FileInfo? userSecret;
 FileInfo? tokenFile;
@@ -30,8 +27,6 @@ Dictionary<string, string> commandLineSwitchMap = new()
     {"--user-secret", nameof(userSecret)},
     {"--token", nameof(token)},
     {"--token-file", nameof(tokenFile)},
-    {"--listen-tcp-socket", nameof(listenTcpSocket)},
-    {"--listen-unix-socket-path", nameof(listenUnixSocketPath)},
     {"--listen-unix-socket-permission", nameof(listenUnixSocketPermission)}
 };
 
@@ -39,8 +34,6 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddCommandLine(args, commandLineSwitchMap);
 
 systemd = args.ContainsFlag(nameof(systemd)) || builder.Configuration.GetValue<bool>(nameof(systemd));
-listenTcpSocket = builder.Configuration.GetValue<string>(nameof(listenTcpSocket))?.AsIPEndPoint();
-listenUnixSocketPath = builder.Configuration.GetValue<string>(nameof(listenUnixSocketPath));
 listenUnixSocketPermission = builder.Configuration.GetValue<UnixFileMode>(
     nameof(listenUnixSocketPermission), defaultListenUnixSocketPermission);
 userSecret = builder.Configuration.GetValue<string>(nameof(userSecret))?.AsFileInfo();
@@ -48,22 +41,6 @@ tokenFile = builder.Configuration.GetValue<string>(nameof(tokenFile))?.AsFileInf
 token = builder.Configuration.GetValue<string>(nameof(token));
 
 builder.Logging.AddConsole(systemd, builder.Environment.IsDevelopment() ? LogLevel.Debug : LogLevel.Information);
-
-builder.WebHost.ConfigureKestrel(
-(kestrelServerOptions) =>
-    {
-        if (listenTcpSocket is not null)
-        {
-            kestrelServerOptions.Listen(listenTcpSocket);
-        }
-
-        if (listenUnixSocketPath is not null && Socket.OSSupportsUnixDomainSockets)
-        {
-            kestrelServerOptions.ListenUnixSocket(listenUnixSocketPath);
-            setSocketPermission = true;
-        }
-    }
-);
 
 IEnumerable<Assembly> assembliesInAttribute = Assembly.GetExecutingAssembly()
     .GetCustomAttributes<AssemblyContainsModuleAttribute>()
@@ -152,9 +129,26 @@ app.UseAuthTokenAuthentication();
 app.Logger.LogDebug("Mapping controllers");
 app.MapControllers();
 await app.StartAsync();
-if (setSocketPermission && !OperatingSystem.IsWindows() && listenUnixSocketPath is not null)
+if (!OperatingSystem.IsWindows())
 {
-    File.SetUnixFileMode(listenUnixSocketPath, listenUnixSocketPermission);
+    const string unixDomainSocketUrlPrefixHttp = "http://unix:";
+    const string unixDomainSocketUrlPrefixHttps = "https://unix:";
+    IEnumerable<string> filteredUrls =
+        app.Urls
+            .TakeWhile((url) =>
+                    url.StartsWith(unixDomainSocketUrlPrefixHttp)
+                || url.StartsWith(unixDomainSocketUrlPrefixHttps))
+            .Select((url) =>
+                    url.StartsWith(unixDomainSocketUrlPrefixHttp)
+                ? url.Substring(unixDomainSocketUrlPrefixHttp.Length)
+                : url.Substring(unixDomainSocketUrlPrefixHttps.Length))
+            .TakeWhile((url) =>
+                    !string.IsNullOrEmpty(url)
+                && !string.IsNullOrWhiteSpace(url));
+    foreach (string url in filteredUrls)
+    {
+        File.SetUnixFileMode(url, listenUnixSocketPermission);
+    }
 }
 await app.WaitForShutdownAsync();
 

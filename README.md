@@ -47,8 +47,7 @@ A tool to renew e5 subscription by calling msgraph APIs
 
 4. Get program
 
-    You can download prebuilt program at [Release](https://github.com/arenekosreal/E5Renewer.Net/releases) page, simply choose which one you want, download it, unpack it and run it.
-    If you want to [build](#build) from source, you can run `dotnet publish` and you will find binaries at `bin/Release/net8.0`.
+    You can [download](https://github.com/arenekosreal/E5Renewer.Net/releases) or [build](#build) to get binary files.
 
 5. Run program
 
@@ -180,7 +179,10 @@ Server will only accept request less than **30 seconds** older than server time.
 See [http-api.md](./http-api.md) for possible apis
 
 > [!NOTE]
-> This program supports **HTTP** only, and it is insecure. Please use a reverse proxy tool like `nginx` or `apache` in front of it to transfer data through untrusted environment.
+> This program plans to support **HTTP** only, and it is insecure. 
+> Please use a reverse proxy tool like `nginx` or `apache` to transfer data through untrusted environment.
+> Althouth Asp.Net Core supports https and you can enable it through Asp.Net Core configuration, 
+> we do not guarantee its availability.
 
 ## Modules
 

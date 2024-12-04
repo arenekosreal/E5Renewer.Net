@@ -66,16 +66,8 @@ Select(
 ).OfType<Assembly>();
 builder.Services.AddModules(assemblies.ToArray());
 
-if (userSecret is not null)
-{
-    builder.Services.AddUserSecretFile(userSecret);
-}
-else
-{
-    throw new NullReferenceException(nameof(userSecret));
-}
-
 builder.Services
+    .AddUserSecretFile(userSecret.EnsureNotNull(nameof(userSecret)))
     .AddTokenOverride(token, tokenFile)
     .AddDummyResultGenerator()
     .AddSecretProvider()

@@ -96,11 +96,12 @@ Run `dotnet publish -c Release` and you can get binary at `E5Renewer/bin/Release
 
 ## Get running statistics
 
-Using `curl` or any tool which can send http request, send request to `http://<listen_addr>:<listen_port>` or unix socket `<listen_socket>`,
+Using `curl` or any tool which can send http request, send request to endpoints like `http://127.0.0.1:5000` or unix socket `/path/to/socket`,
 each request should be sent with header `Authorization: Bearer <auth_token>`.
 You will get json response if everything is fine. If it is a GET request, send milisecond timestamp in query param `timestamp`,
 If it is a POST request, send milisecond timestamp in post json with key `timestamp` and convert it to string.
 Most of the time, we will return json instead plain text, but you need to check response code to see if request is success.
+If you are using https, simply send https request instead.
 
 For example:
 
@@ -110,7 +111,7 @@ For example:
 
 ```
 curl -H 'Authorization: Bearer <auth_token>' -H 'Accept: application/json' \
-    'http://<listen_addr>:<listen_port>/v1/list_apis?timestamp=<timestamp>' | jq '.'
+    'http://127.0.0.1:5000/v1/list_apis?timestamp=<timestamp>' | jq '.'
 {
     "method": "list_apis",
     "args": {},

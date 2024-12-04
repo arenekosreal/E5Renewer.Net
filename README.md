@@ -70,9 +70,7 @@ A tool to renew e5 subscription by calling msgraph APIs
 
     Asp.Net Core supports `--urls` parameter to set customized listen endpoint, 
     such as `--urls=http://127.0.0.1:5001` or `--urls=http://unix:/path/to/socket`.
-    Unix Domain Socket file's permission can be customized with argument `--listen-unix-socket-permission`,
-    but this only works on non-Windows platform because `File.SetUnixFileMode(string, UnixFileMode)` is used to set permission,
-    while it does not work on Windows.
+    Unix Domain Socket file's permission can be customized with argument `--listen-unix-socket-permission`.
 
     Those customized arguments are actually Asp.Net Core configuration items, items' names are the camelCase of arguments.
     For example, `--token` will be mapped to `token`, `--user-secret` will be mapped to `userSecret`, 

@@ -1,5 +1,3 @@
-using System.Net;
-using System.Net.Sockets;
 using System.Reflection;
 
 using E5Renewer;
@@ -129,26 +127,23 @@ app.UseAuthTokenAuthentication();
 app.Logger.LogDebug("Mapping controllers");
 app.MapControllers();
 await app.StartAsync();
-if (!OperatingSystem.IsWindows())
+const string unixDomainSocketUrlPrefixHttp = "http://unix:";
+const string unixDomainSocketUrlPrefixHttps = "https://unix:";
+IEnumerable<string> filteredUrls =
+    app.Urls
+        .TakeWhile((url) =>
+                url.StartsWith(unixDomainSocketUrlPrefixHttp)
+            || url.StartsWith(unixDomainSocketUrlPrefixHttps))
+        .Select((url) =>
+                url.StartsWith(unixDomainSocketUrlPrefixHttp)
+            ? url.Substring(unixDomainSocketUrlPrefixHttp.Length)
+            : url.Substring(unixDomainSocketUrlPrefixHttps.Length))
+        .TakeWhile((url) =>
+                !string.IsNullOrEmpty(url)
+            && !string.IsNullOrWhiteSpace(url));
+foreach (string url in filteredUrls)
 {
-    const string unixDomainSocketUrlPrefixHttp = "http://unix:";
-    const string unixDomainSocketUrlPrefixHttps = "https://unix:";
-    IEnumerable<string> filteredUrls =
-        app.Urls
-            .TakeWhile((url) =>
-                    url.StartsWith(unixDomainSocketUrlPrefixHttp)
-                || url.StartsWith(unixDomainSocketUrlPrefixHttps))
-            .Select((url) =>
-                    url.StartsWith(unixDomainSocketUrlPrefixHttp)
-                ? url.Substring(unixDomainSocketUrlPrefixHttp.Length)
-                : url.Substring(unixDomainSocketUrlPrefixHttps.Length))
-            .TakeWhile((url) =>
-                    !string.IsNullOrEmpty(url)
-                && !string.IsNullOrWhiteSpace(url));
-    foreach (string url in filteredUrls)
-    {
-        File.SetUnixFileMode(url, listenUnixSocketPermission);
-    }
+    new FileInfo(url).SetUnixFileMode(listenUnixSocketPermission);
 }
 await app.WaitForShutdownAsync();
 

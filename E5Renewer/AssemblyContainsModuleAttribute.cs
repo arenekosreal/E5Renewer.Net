@@ -7,12 +7,8 @@ internal class AssemblyContainsModuleAttribute : Attribute
 {
     private string assemblyName { get; }
 
-    public Assembly assembly
-    {
-        get => AppDomain.CurrentDomain.Load(new AssemblyName(this.assemblyName));
-    }
+    public Assembly assembly { get => AppDomain.CurrentDomain.Load(this.assemblyName); }
 
-    public AssemblyContainsModuleAttribute(string assemblyName) =>
-        this.assemblyName = assemblyName;
+    public AssemblyContainsModuleAttribute(string assemblyName) => this.assemblyName = assemblyName;
 
 }

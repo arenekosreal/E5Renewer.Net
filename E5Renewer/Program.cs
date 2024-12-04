@@ -66,7 +66,7 @@ IEnumerable<Assembly> assembliesInFilesystem = GetPossibleModulesPaths()
     .OfType<Assembly>();
 
 builder.Services
-    .AddModules(assembliesInAttribute.Concat(assembliesInFilesystem).ToArray())
+    .AddModules(assembliesInAttribute.Concat(assembliesInFilesystem))
     .AddUserSecretFile(userSecret.EnsureNotNull(nameof(userSecret)))
     .AddTokenOverride(token, tokenFile)
     .AddDummyResultGenerator()

@@ -39,7 +39,10 @@ namespace E5Renewer
         public static IServiceCollection AddUserSecretFile(this IServiceCollection services, FileInfo userSecret) =>
             services.AddKeyedSingleton<FileInfo>(nameof(userSecret), userSecret);
 
-        public static IServiceCollection AddModules(this IServiceCollection services, params Assembly[] assemblies)
+        public static IServiceCollection AddModules(this IServiceCollection services, Assembly assembly) =>
+            services.AddModules([assembly]);
+
+        public static IServiceCollection AddModules(this IServiceCollection services, IEnumerable<Assembly> assemblies)
         {
             Type[] knownModulesTypes = [
                 typeof(IModulesChecker),

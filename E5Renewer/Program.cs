@@ -43,30 +43,30 @@ builder.Logging.AddConsole(systemd, builder.Environment.IsDevelopment() ? LogLev
 IEnumerable<Assembly> assembliesInAttribute = Assembly.GetExecutingAssembly()
     .GetCustomAttributes<AssemblyContainsModuleAttribute>()
     .Select((attribute) => attribute.assembly);
-builder.Services.AddModules(assembliesInAttribute.ToArray());
-IEnumerable<Assembly> assemblies = GetPossibleModulesPaths().
-Select(
+IEnumerable<Assembly> assembliesInFilesystem = GetPossibleModulesPaths()
+    .Select(
     (directory) =>
-    {
-        FileInfo[] files = directory.GetFiles(directory.Name + ".dll", SearchOption.TopDirectoryOnly);
-        if (files.Count() > 0)
         {
-            ModuleLoadContext context = new(files[0]);
-            try
+            FileInfo[] files = directory.GetFiles(directory.Name + ".dll", SearchOption.TopDirectoryOnly);
+            if (files.Count() > 0)
             {
-                Assembly assembly = context.LoadFromAssemblyName(
-                    new(Path.GetFileNameWithoutExtension(files[0].FullName))
-                );
-                return assembly;
+                ModuleLoadContext context = new(files[0]);
+                try
+                {
+                    Assembly assembly = context.LoadFromAssemblyName(
+                        new(Path.GetFileNameWithoutExtension(files[0].FullName))
+                    );
+                    return assembly;
+                }
+                catch { }
             }
-            catch { }
+            return null;
         }
-        return null;
-    }
-).OfType<Assembly>();
-builder.Services.AddModules(assemblies.ToArray());
+    )
+    .OfType<Assembly>();
 
 builder.Services
+    .AddModules(assembliesInAttribute.Concat(assembliesInFilesystem).ToArray())
     .AddUserSecretFile(userSecret.EnsureNotNull(nameof(userSecret)))
     .AddTokenOverride(token, tokenFile)
     .AddDummyResultGenerator()

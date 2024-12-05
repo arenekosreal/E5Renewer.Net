@@ -2,12 +2,6 @@ namespace E5Renewer
 {
     internal static class StringArrayExtends
     {
-        public static bool ContainsFlag(this string[] args, string flag)
-        {
-            string[] prefixes = ["--", "-", "/"];
-            return prefixes.Any((prefix) => args.ContainsFlag(flag, prefix));
-        }
-
         public static bool ContainsFlag(this string[] args, string flag, string prefix)
         {
             if (flag.Length <= 0)

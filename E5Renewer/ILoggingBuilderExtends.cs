@@ -2,7 +2,7 @@ namespace E5Renewer
 {
     internal static class ILoggingBuilderExtends
     {
-        public static ILoggingBuilder AddConsole(this ILoggingBuilder builder, bool systemd, LogLevel level)
+        public static ILoggingBuilder AddConsole(this ILoggingBuilder builder, bool systemd)
         {
             const string timeStampFormat = "yyyy-MM-dd HH:mm:ss ";
 
@@ -21,7 +21,6 @@ namespace E5Renewer
                     }
                 );
             }
-            builder.SetMinimumLevel(level);
             return builder;
         }
     }

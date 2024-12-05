@@ -5,6 +5,7 @@ using E5Renewer.Controllers;
 using E5Renewer.Controllers.V1;
 using E5Renewer.Models.Modules;
 
+using CaseConverter;
 using Microsoft.AspNetCore.Mvc;
 
 const UnixFileMode defaultListenUnixSocketPermission =
@@ -23,24 +24,24 @@ string? token;
 
 Dictionary<string, string> commandLineSwitchMap = new()
 {
-    {"--systemd", nameof(systemd)},
-    {"--user-secret", nameof(userSecret)},
-    {"--token", nameof(token)},
-    {"--token-file", nameof(tokenFile)},
-    {"--listen-unix-socket-permission", nameof(listenUnixSocketPermission)}
+    {$"--{nameof(systemd).ToKebabCase()}", nameof(systemd).ToTitleCase()},
+    {$"--{nameof(userSecret).ToKebabCase()}", nameof(userSecret).ToTitleCase()},
+    {$"--{nameof(token).ToKebabCase()}", nameof(token).ToTitleCase()},
+    {$"--{nameof(tokenFile).ToKebabCase()}", nameof(tokenFile).ToTitleCase()},
+    {$"--{nameof(listenUnixSocketPermission).ToKebabCase()}", nameof(listenUnixSocketPermission).ToTitleCase()}
 };
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddCommandLine(args, commandLineSwitchMap);
 
-systemd = args.ContainsFlag(nameof(systemd)) || builder.Configuration.GetValue<bool>(nameof(systemd));
+systemd = args.ContainsFlag(nameof(systemd).ToKebabCase(), "--") || builder.Configuration.GetValue<bool>(nameof(systemd).ToTitleCase());
 listenUnixSocketPermission = builder.Configuration.GetValue<UnixFileMode>(
-    nameof(listenUnixSocketPermission), defaultListenUnixSocketPermission);
-userSecret = builder.Configuration.GetValue<string>(nameof(userSecret))?.AsFileInfo();
-tokenFile = builder.Configuration.GetValue<string>(nameof(tokenFile))?.AsFileInfo();
-token = builder.Configuration.GetValue<string>(nameof(token));
+    nameof(listenUnixSocketPermission).ToTitleCase(), defaultListenUnixSocketPermission);
+userSecret = builder.Configuration.GetValue<string>(nameof(userSecret).ToTitleCase())?.AsFileInfo();
+tokenFile = builder.Configuration.GetValue<string>(nameof(tokenFile).ToTitleCase())?.AsFileInfo();
+token = builder.Configuration.GetValue<string>(nameof(token).ToTitleCase());
 
-builder.Logging.AddConsole(systemd, builder.Environment.IsDevelopment() ? LogLevel.Debug : LogLevel.Information);
+builder.Logging.AddConsole(systemd);
 
 IEnumerable<Assembly> assembliesToLoad = Assembly.GetExecutingAssembly()
     .GetCustomAttributes<AssemblyContainsModuleAttribute>()

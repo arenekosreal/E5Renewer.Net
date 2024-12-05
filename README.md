@@ -72,16 +72,17 @@ A tool to renew e5 subscription by calling msgraph APIs
     such as `--urls=http://127.0.0.1:5001` or `--urls=http://unix:/path/to/socket`.
     Unix Domain Socket file's permission can be customized with argument `--listen-unix-socket-permission`.
 
-    Those customized arguments are actually Asp.Net Core configuration items, items' names are the camelCase of arguments.
-    For example, `--token` will be mapped to `token`, `--user-secret` will be mapped to `userSecret`, 
-    and `--listen-unix-socket-permission` will be mapped to `listenUnixSocketPermission`.
+    Those customized arguments are actually Asp.Net Core configuration items, items' names are the TitleCase of arguments.
+    For example, `--token` will be mapped to `Token`, `--user-secret` will be mapped to `UserSecret`, 
+    and `--listen-unix-socket-permission` will be mapped to `ListenUnixSocketPermission`.
     With this converting map, you can use Asp.Net Core's ways to provide them, 
     such as json configuration, environment variable, etc.
-    But there is a special case: `--systemd` should be provided with `systemd=true` if you do not use commandline argument,
+    But there is a special case: `--systemd` should be provided with `Systemd=true` if you do not use commandline argument,
     as Asp.Net Core's configuration requires a value, we added a special check for the `--systemd` flag.
     Those customized arguments do not have short forms like `-s`, `-u`.
 
-    `--user-secret` is required to be provided, or a `NullReferenceException` of `userSecret` will be thown.
+    `--user-secret` is required to be provided through any method to provide an Asp.Net Core configuration value, 
+    or a `NullReferenceException` of `userSecret` will be thown.
     
 > [!NOTE]
 > If `--token` and `--token-file` both are specified, we prefer `--token`. If you forget to set neither of them, we use a randomly generated value.

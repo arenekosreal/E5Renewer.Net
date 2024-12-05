@@ -39,26 +39,27 @@ jobs:
         id: build-env-info
         shell: bash
         run: |
-          # machine=x86_64
-          python -c 'import platform;print("machine={}".format(platform.machine()))' | tee -a "$GITHUB_OUTPUT"
-          # system=ubuntu
-          echo system=${{ matrix.os }} | cut -d - -f 1 | tee -a "$GITHUB_OUTPUT"
           # rid=linux-x64
           case ${{ matrix.os }} in
-            ubuntu-latest) echo rid=linux-${{ matrix.arch }} | tee -a "$GITHUB_OUTPUT";;
-            windows-latest) echo rid=win-${{ matrix.arch }} | tee -a "$GITHUB_OUTPUT";;
-            macos-latest) echo rid=osx-${{ matrix.arch }} | tee -a "$GITHUB_OUTPUT";;
-            *) echo rid=$(dotnet --info | grep RID | cut -d : -f 2 | xargs) | tee -a "$GITHUB_OUTPUT";;
+            ubuntu-latest) rid=linux-${{ matrix.arch }} ;;
+            windows-latest) rid=win-${{ matrix.arch }} ;;
+            macos-latest) rid=osx-${{ matrix.arch }} ;;
+            *) rid=$(dotnet --info | grep RID | cut -d : -f 2 | xargs) ;;
           esac
+          # suffix=linux-x64-aot-self-contained
+          suffix=$rid-${{ matrix.aot == 'true' && '' || 'no' }}aot-${{ matrix.self-contained == 'true' && 'self-contained' || 'require-runtime' }}
+          
+          echo "rid=$rid" >> "$GITHUB_OUTPUT"
+          echo "suffix=$suffix" >> "$GITHUB_OUTPUT"
       - name: "Publish binary"
         run: "dotnet publish E5Renewer/E5Renewer.csproj --runtime ${{ steps.build-env-info.outputs.rid }} ${{ matrix.aot == 'true' && '' || '-p:PublishAot=false' }} --sc ${{ matrix.self-contained }}"
       - name: "Create archive"
-        run: "7z a E5Renewer-${{ steps.build-env-info.outputs.system }}-${{ steps.build-env-info.outputs.machine }}-${{ matrix.aot == 'true' && 'aot' || 'noaot' }}-${{ matrix.self-contained == 'true' && 'self-contained' || 'require-runtime' }}.7z E5Renewer/bin/Release/net${{ matrix.dotnet }}/${{ steps.build-env-info.outputs.rid }}/publish/*"
+        run: "7z a E5Renewer-${{ steps.build-env-info.outputs.suffix }}.7z E5Renewer/bin/Release/net${{ matrix.dotnet }}/${{ steps.build-env-info.outputs.rid }}/publish/*"
       - name: "Upload archive"
         uses: "actions/upload-artifact@v4"
         with:
-          name: "E5Renewer-${{ steps.build-env-info.outputs.system }}-${{ steps.build-env-info.outputs.machine }}-${{ matrix.aot == 'true' && 'aot' || 'noaot' }}-${{ matrix.self-contained == 'true' && 'self-contained' || 'require-runtime' }}"
-          path: "E5Renewer-${{ steps.build-env-info.outputs.system }}-${{ steps.build-env-info.outputs.machine }}-${{ matrix.aot == 'true' && 'aot' || 'noaot' }}-${{ matrix.self-contained == 'true' && 'self-contained' || 'require-runtime' }}.7z"
+          name: "E5Renewer-${{ steps.build-env-info.outputs.suffix }}"
+          path: "E5Renewer-${{ steps.build-env-info.outputs.suffix }}.7z"
 
   release:
     name: "Upload release"

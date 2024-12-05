@@ -14,6 +14,7 @@ const UnixFileMode defaultListenUnixSocketPermission =
     UnixFileMode.OtherRead | UnixFileMode.OtherWrite;
 
 const string modulesInFilesystemBaseDirectoryName = "modules";
+const string commandLineArgumentPrefixLong = "--";
 
 // Variables from Configuration
 bool systemd;
@@ -24,24 +25,23 @@ string? token;
 
 Dictionary<string, string> commandLineSwitchMap = new()
 {
-    {$"--{nameof(systemd).ToKebabCase()}", nameof(systemd).ToTitleCase()},
-    {$"--{nameof(userSecret).ToKebabCase()}", nameof(userSecret).ToTitleCase()},
-    {$"--{nameof(token).ToKebabCase()}", nameof(token).ToTitleCase()},
-    {$"--{nameof(tokenFile).ToKebabCase()}", nameof(tokenFile).ToTitleCase()},
-    {$"--{nameof(listenUnixSocketPermission).ToKebabCase()}", nameof(listenUnixSocketPermission).ToTitleCase()}
+    {$"{commandLineArgumentPrefixLong}{nameof(systemd).ToKebabCase()}", nameof(systemd).ToTitleCase()},
+    {$"{commandLineArgumentPrefixLong}{nameof(userSecret).ToKebabCase()}", nameof(userSecret).ToTitleCase()},
+    {$"{commandLineArgumentPrefixLong}{nameof(token).ToKebabCase()}", nameof(token).ToTitleCase()},
+    {$"{commandLineArgumentPrefixLong}{nameof(tokenFile).ToKebabCase()}", nameof(tokenFile).ToTitleCase()},
+    {$"{commandLineArgumentPrefixLong}{nameof(listenUnixSocketPermission).ToKebabCase()}", nameof(listenUnixSocketPermission).ToTitleCase()}
 };
 
-WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+WebApplicationBuilder builder = WebApplication.CreateBuilder();
 builder.Configuration.AddCommandLine(args, commandLineSwitchMap);
 
-systemd = args.ContainsFlag(nameof(systemd).ToKebabCase(), "--") || builder.Configuration.GetValue<bool>(nameof(systemd).ToTitleCase());
+systemd = args.ContainsFlag(nameof(systemd).ToKebabCase(), commandLineArgumentPrefixLong) ||
+            builder.Configuration.GetValue<bool>(nameof(systemd).ToTitleCase());
 listenUnixSocketPermission = builder.Configuration.GetValue<UnixFileMode>(
     nameof(listenUnixSocketPermission).ToTitleCase(), defaultListenUnixSocketPermission);
 userSecret = builder.Configuration.GetValue<string>(nameof(userSecret).ToTitleCase())?.AsFileInfo();
 tokenFile = builder.Configuration.GetValue<string>(nameof(tokenFile).ToTitleCase())?.AsFileInfo();
 token = builder.Configuration.GetValue<string>(nameof(token).ToTitleCase());
-
-builder.Logging.AddConsole(systemd);
 
 IEnumerable<Assembly> assembliesToLoad = Assembly.GetExecutingAssembly()
     .GetCustomAttributes<AssemblyContainsModuleAttribute>()
@@ -78,6 +78,8 @@ if (modulesInFilesystemBaseDirectory.Exists)
     assembliesToLoad = assembliesToLoad.Concat(assembliesInFilesystem);
 }
 
+builder.Logging.AddConsole(systemd);
+
 builder.Services
     .AddModules(assembliesToLoad)
     .AddUserSecretFile(userSecret.EnsureNotNull(nameof(userSecret)))
@@ -106,9 +108,7 @@ builder.Services
 
 
 WebApplication app = builder.Build();
-
 app.UseModulesCheckers();
-
 app.UseExceptionHandler(
     (exceptionHandlerApp) =>
         exceptionHandlerApp.Run(

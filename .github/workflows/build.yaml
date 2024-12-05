@@ -47,7 +47,7 @@ jobs:
             *) rid=$(dotnet --info | grep RID | cut -d : -f 2 | xargs) ;;
           esac
           # suffix=linux-x64-aot-self-contained
-          suffix=$rid-${{ matrix.aot == 'true' && '' || 'no' }}aot-${{ matrix.self-contained == 'true' && 'self-contained' || 'require-runtime' }}
+          suffix=$rid-${{ matrix.aot == 'true' && 'aot' || 'noaot' }}-${{ matrix.self-contained == 'true' && 'self-contained' || 'require-runtime' }}
           
           echo "rid=$rid" >> "$GITHUB_OUTPUT"
           echo "suffix=$suffix" >> "$GITHUB_OUTPUT"

@@ -29,6 +29,11 @@ jobs:
       - name: "Fix long path on windows"
         if: matrix.os == 'windows-latest'
         run: "git config --system core.longpaths true"
+      - name: "Prepare depends for AoT on Linux"
+        if: matrix.os == 'ubuntu-latest' && matrix.aot == 'true'
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y zlib1g-dev
       - name: "Checkout"
         uses: "actions/checkout@v4"
       - name: "Setup .NET"
@@ -79,5 +84,6 @@ jobs:
           body: |
             Difference between self-contained and require-runtime: 
             You have to install asp.net runtime and dotnet runtime if using `require-runtime` version.
+
             Difference between aot and noaot: 
             See [here](https://learn.microsoft.com/en-us/dotnet/core/deploying/native-aot)

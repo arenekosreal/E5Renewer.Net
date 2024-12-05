@@ -18,6 +18,12 @@ jobs:
         arch:
           - "x64"
           - "arm64"
+        aot:
+          - "true"
+          - "false"
+        self-contained:
+          - "true"
+          - "false"
     runs-on: ${{ matrix.os }}
     steps:
       - name: "Fix long path on windows"
@@ -29,8 +35,6 @@ jobs:
         uses: "actions/setup-dotnet@v4"
         with:
           dotnet-version: ${{ matrix.dotnet }}
-      - name: "Publish binary"
-        run: "dotnet publish --arch ${{ matrix.arch }}"
       - name: "Get build environment info"
         id: build-env-info
         shell: bash
@@ -46,16 +50,15 @@ jobs:
             macos-latest) echo rid=osx-${{ matrix.arch }} | tee -a "$GITHUB_OUTPUT";;
             *) echo rid=$(dotnet --info | grep RID | cut -d : -f 2 | xargs) | tee -a "$GITHUB_OUTPUT";;
           esac
-      - name: "Construct files"
-        run: |
-          cp -r E5Renewer/bin/Release/net${{ matrix.dotnet }}/${{ steps.build-env-info.outputs.rid }}/publish dist   
+      - name: "Publish binary"
+        run: "dotnet publish E5Renewer/E5Renewer.csproj --runtime ${{ steps.build-env-info.outputs.rid }} ${{ matrix.aot == 'true' && '' || '-p:PublishAot=false' }} --sc ${{ matrix.self-contained }}"
       - name: "Create archive"
-        run: "7z a E5Renewer-${{ steps.build-env-info.outputs.system }}-${{ steps.build-env-info.outputs.machine }}.7z ./dist/*"
+        run: "7z a E5Renewer-${{ steps.build-env-info.outputs.system }}-${{ steps.build-env-info.outputs.machine }}-${{ matrix.aot == 'true' && 'aot' || 'noaot' }}-${{ matrix.self-contained == 'true' && 'self-contained' || 'require-runtime' }}.7z E5Renewer/bin/Release/net${{ matrix.dotnet }}/${{ steps.build-env-info.outputs.rid }}/publish/*"
       - name: "Upload archive"
         uses: "actions/upload-artifact@v4"
         with:
-          name: "E5Renewer-${{ steps.build-env-info.outputs.system }}-${{ steps.build-env-info.outputs.machine }}"
-          path: "E5Renewer-${{ steps.build-env-info.outputs.system }}-${{ steps.build-env-info.outputs.machine }}.7z"
+          name: "E5Renewer-${{ steps.build-env-info.outputs.system }}-${{ steps.build-env-info.outputs.machine }}-${{ matrix.aot == 'true' && 'aot' || 'noaot' }}-${{ matrix.self-contained == 'true' && 'self-contained' || 'require-runtime' }}"
+          path: "E5Renewer-${{ steps.build-env-info.outputs.system }}-${{ steps.build-env-info.outputs.machine }}-${{ matrix.aot == 'true' && 'aot' || 'noaot' }}-${{ matrix.self-contained == 'true' && 'self-contained' || 'require-runtime' }}.7z"
 
   release:
     name: "Upload release"
@@ -72,3 +75,8 @@ jobs:
           files: "**/E5Renewer-*.7z"
           generate_release_notes: true
           fail_on_unmatched_files: true
+          body: |
+            Difference between self-contained and require-runtime: 
+            You have to install asp.net runtime and dotnet runtime if using `require-runtime` version.
+            Difference between aot and noaot: 
+            See [here](https://learn.microsoft.com/en-us/dotnet/core/deploying/native-aot)

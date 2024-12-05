@@ -12,6 +12,8 @@ const UnixFileMode defaultListenUnixSocketPermission =
     UnixFileMode.GroupRead | UnixFileMode.GroupWrite |
     UnixFileMode.OtherRead | UnixFileMode.OtherWrite;
 
+const string modulesInFilesystemBaseDirectoryName = "modules";
+
 // Variables from Configuration
 bool systemd;
 UnixFileMode listenUnixSocketPermission;
@@ -40,33 +42,43 @@ token = builder.Configuration.GetValue<string>(nameof(token));
 
 builder.Logging.AddConsole(systemd, builder.Environment.IsDevelopment() ? LogLevel.Debug : LogLevel.Information);
 
-IEnumerable<Assembly> assembliesInAttribute = Assembly.GetExecutingAssembly()
+IEnumerable<Assembly> assembliesToLoad = Assembly.GetExecutingAssembly()
     .GetCustomAttributes<AssemblyContainsModuleAttribute>()
     .Select((attribute) => attribute.assembly);
-IEnumerable<Assembly> assembliesInFilesystem = GetPossibleModulesPaths()
-    .Select(
-    (directory) =>
-        {
-            FileInfo[] files = directory.GetFiles(directory.Name + ".dll", SearchOption.TopDirectoryOnly);
-            if (files.Count() > 0)
+
+DirectoryInfo modulesInFilesystemBaseDirectory = new(Path.Combine(AppContext.BaseDirectory, modulesInFilesystemBaseDirectoryName));
+if (modulesInFilesystemBaseDirectory.Exists)
+{
+    IEnumerable<Assembly> assembliesInFilesystem = modulesInFilesystemBaseDirectory.GetDirectories()
+        .Select(
+        (directory) =>
             {
-                ModuleLoadContext context = new(files[0]);
-                try
+                string searchFileName = directory.Name + ".dll";
+                if (!string.IsNullOrWhiteSpace(searchFileName) && !searchFileName.ContainsAny(["*", "?"]))
                 {
-                    Assembly assembly = context.LoadFromAssemblyName(
-                        new(Path.GetFileNameWithoutExtension(files[0].FullName))
-                    );
-                    return assembly;
+                    FileInfo[] files = directory.GetFiles(searchFileName, SearchOption.TopDirectoryOnly);
+                    if (files.Count() > 0)
+                    {
+                        ModuleLoadContext context = new(files[0]);
+                        try
+                        {
+                            Assembly assembly = context.LoadFromAssemblyName(
+                                new(Path.GetFileNameWithoutExtension(files[0].FullName))
+                            );
+                            return assembly;
+                        }
+                        catch { }
+                    }
                 }
-                catch { }
+                return null;
             }
-            return null;
-        }
-    )
-    .OfType<Assembly>();
+        )
+        .OfType<Assembly>();
+    assembliesToLoad = assembliesToLoad.Concat(assembliesInFilesystem);
+}
 
 builder.Services
-    .AddModules(assembliesInAttribute.Concat(assembliesInFilesystem))
+    .AddModules(assembliesToLoad)
     .AddUserSecretFile(userSecret.EnsureNotNull(nameof(userSecret)))
     .AddTokenOverride(token, tokenFile)
     .AddDummyResultGenerator()
@@ -130,32 +142,9 @@ IEnumerable<string> filteredUrls =
                 url.StartsWith(unixDomainSocketUrlPrefixHttp)
             ? url.Substring(unixDomainSocketUrlPrefixHttp.Length)
             : url.Substring(unixDomainSocketUrlPrefixHttps.Length))
-        .TakeWhile((url) =>
-                !string.IsNullOrEmpty(url)
-            && !string.IsNullOrWhiteSpace(url));
+        .TakeWhile((url) => !string.IsNullOrWhiteSpace(url));
 foreach (string url in filteredUrls)
 {
     new FileInfo(url).SetUnixFileMode(listenUnixSocketPermission);
 }
 await app.WaitForShutdownAsync();
-
-static IEnumerable<DirectoryInfo> GetPossibleModulesPaths()
-{
-    const string modulesBaseFolderName = "modules";
-    const string modulesBaseFileName = "E5Renewer.Modules.*.dll";
-    Dictionary<string, IEnumerable<DirectoryInfo>> results = new();
-    DirectoryInfo assemblyDirectory = new(Path.Combine(AppContext.BaseDirectory, modulesBaseFolderName));
-    DirectoryInfo[] directoriesToCheck = [assemblyDirectory];
-    foreach (DirectoryInfo currentDirectory in directoriesToCheck)
-    {
-        if (currentDirectory.Exists && !results.ContainsKey(currentDirectory.FullName))
-        {
-            // /modules/*/E5Renewer.Modules.*/E5Renewer.Modules.*.dll
-            IEnumerable<DirectoryInfo> directories = currentDirectory.GetFiles(modulesBaseFileName, SearchOption.AllDirectories).Where(
-                (fileInfo) => (fileInfo.Directory?.Name ?? string.Empty) == fileInfo.Name.Substring(0, fileInfo.Name.Length - 4)
-            ).Select((x) => x.Directory).OfType<DirectoryInfo>();
-            results[currentDirectory.FullName] = directories;
-        }
-    }
-    return results.Values.SelectMany((x) => x);
-}

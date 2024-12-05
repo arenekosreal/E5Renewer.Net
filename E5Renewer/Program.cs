@@ -54,7 +54,7 @@ if (modulesInFilesystemBaseDirectory.Exists)
         (directory) =>
             {
                 string searchFileName = directory.Name + ".dll";
-                if (!string.IsNullOrWhiteSpace(searchFileName) && !searchFileName.ContainsAny(["*", "?"]))
+                if (!searchFileName.ContainsAny(["*", "?"]))
                 {
                     FileInfo[] files = directory.GetFiles(searchFileName, SearchOption.TopDirectoryOnly);
                     if (files.Count() > 0)

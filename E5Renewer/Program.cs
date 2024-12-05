@@ -1,11 +1,12 @@
 using System.Reflection;
 
+using CaseConverter;
+
 using E5Renewer;
 using E5Renewer.Controllers;
 using E5Renewer.Controllers.V1;
 using E5Renewer.Models.Modules;
 
-using CaseConverter;
 using Microsoft.AspNetCore.Mvc;
 
 const UnixFileMode defaultListenUnixSocketPermission =

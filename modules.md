@@ -22,10 +22,19 @@ but it may not have too much meaning because it is just been added into DI servi
 
 If you want to create a new module in this repository, you need to create a new C# project.
 It must have references to `E5Renewer.Models.Modules` project, 
-and `E5Renewer.Models.Modules.ModuleAttribute` for marking your module.
+because we need `E5Renewer.Models.Modules.ModuleAttribute` for marking your module.
 
 Then you need to add reference to project in the solution based on your module's type.
 For example, you need to add `E5Renewer.Models.ModulesCheckers` project if you want to implement `IModulesChecker`.
+
+> [!TIPS]
+> If you need to access Asp.Net Core items, like `ILogger`, you can add a
+> ```xml
+> <ItemGroup>
+>   <FrameworkReference Include="Microsoft.AspNetCore.App" />
+> </ItemGroup>
+> ```
+> in your `.csproj` file.
 
 ## Write the code
 

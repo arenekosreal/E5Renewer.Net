@@ -484,6 +484,6 @@ $RECYCLE.BIN/
 *.swp
 
 # Customized files to be ignored
-config.json
+user-secret.json
 *.crt
 *.key

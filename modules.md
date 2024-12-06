@@ -27,7 +27,7 @@ because we need `E5Renewer.Models.Modules.ModuleAttribute` for marking your modu
 Then you need to add reference to project in the solution based on your module's type.
 For example, you need to add `E5Renewer.Models.ModulesCheckers` project if you want to implement `IModulesChecker`.
 
-> [!TIPS]
+> [!TIP]
 > If you need to access Asp.Net Core items, like `ILogger`, you can add a
 > ```xml
 > <ItemGroup>

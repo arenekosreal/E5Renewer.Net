@@ -24,6 +24,9 @@ jobs:
         self-contained:
           - "true"
           - "false"
+        exclude:
+          - aot: "true"
+            self-contained: "false"
     runs-on: ${{ matrix.os }}
     steps:
       - name: "Fix long path on windows"
@@ -57,7 +60,7 @@ jobs:
           echo "rid=$rid" >> "$GITHUB_OUTPUT"
           echo "suffix=$suffix" >> "$GITHUB_OUTPUT"
       - name: "Publish binary"
-        run: "dotnet publish E5Renewer/E5Renewer.csproj --runtime ${{ steps.build-env-info.outputs.rid }} ${{ matrix.aot == 'true' && '' || '-p:PublishAot=false' }} --sc ${{ matrix.self-contained }}"
+        run: "dotnet publish E5Renewer/E5Renewer.csproj --runtime ${{ steps.build-env-info.outputs.rid }} ${{ matrix.aot == 'false' && '-p:PublishAot=false' || '' }} --sc ${{ matrix.self-contained }}"
       - name: "Create archive"
         run: "7z a E5Renewer-${{ steps.build-env-info.outputs.suffix }}.7z E5Renewer/bin/Release/net${{ matrix.dotnet }}/${{ steps.build-env-info.outputs.rid }}/publish/*"
       - name: "Upload archive"
@@ -72,6 +75,7 @@ jobs:
     needs: "build"
     permissions:
       contents: "write"
+    if: github.ref_type == 'tag'
     steps:
       - name: "Download archive"
         uses: "actions/download-artifact@v4"

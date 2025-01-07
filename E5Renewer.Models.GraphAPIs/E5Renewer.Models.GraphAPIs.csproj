@@ -11,7 +11,7 @@
     <PackageReference Include="Azure.Identity" Version="1.13.1" />
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.Graph" Version="5.64.0" />
-    <PackageReference Include="SemanticVersioning" Version="2.0.2" />
+    <PackageReference Include="SemanticVersioning" Version="3.0.0" />
   </ItemGroup>
 
   <PropertyGroup>

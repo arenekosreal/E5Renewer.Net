@@ -84,7 +84,7 @@ jobs:
       - name: "Create archive"
         run: |
           7z a E5Renewer-${{ steps.build-env-info.outputs.suffix }}.7z \
-            E5Renewer/bin/Release/net${{ matrix.dotnet }}/${{ steps.build-env-info.outputs.rid }}/publish/*
+            './E5Renewer/bin/Release/net${{ matrix.dotnet }}/${{ steps.build-env-info.outputs.rid }}/publish/*'
         shell: bash
 
       - name: "Upload archive"

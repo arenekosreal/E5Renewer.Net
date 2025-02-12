@@ -6,10 +6,12 @@
     <Deterministic>true</Deterministic>
   </PropertyGroup>
 
-  <PropertyGroup Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net7.0'))">
+  <PropertyGroup Condition="'$(E5RenewerAot)' == 'true' And $([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net7.0'))">
     <PublishAot>true</PublishAot>
     <IsAotCompatible>true</IsAotCompatible>
     <JsonSerializerIsReflectionEnabledByDefault>false</JsonSerializerIsReflectionEnabledByDefault>
     <EnableConfigurationBindingGenerator>true</EnableConfigurationBindingGenerator>
+    <DefineConstaints>$(DefineConstaints);E5RENEWER_AOT</DefineConstaints>
   </PropertyGroup>
+
 </Project>

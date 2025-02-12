@@ -48,6 +48,7 @@ IEnumerable<Assembly> assembliesToLoad = Assembly.GetExecutingAssembly()
     .GetCustomAttributes<AssemblyContainsModuleAttribute>()
     .Select((attribute) => attribute.assembly);
 
+#if ! E5RENEWER_AOT
 DirectoryInfo modulesInFilesystemBaseDirectory = new(Path.Combine(AppContext.BaseDirectory, modulesInFilesystemBaseDirectoryName));
 if (modulesInFilesystemBaseDirectory.Exists)
 {
@@ -78,6 +79,7 @@ if (modulesInFilesystemBaseDirectory.Exists)
         .OfType<Assembly>();
     assembliesToLoad = assembliesToLoad.Concat(assembliesInFilesystem);
 }
+#endif // ! E5RENEWER_AOT
 
 builder.Logging.AddConsole(systemd);
 

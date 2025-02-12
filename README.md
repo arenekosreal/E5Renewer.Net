@@ -95,6 +95,9 @@ A tool to renew e5 subscription by calling msgraph APIs
 
 Run `dotnet publish -c Release` and you can get binary at `E5Renewer/bin/Release/net8.0/publish`
 
+> [!TIP]
+> You can pass `-p:E5RenewerAot=true` to create an AoT build.
+
 ## Get running statistics
 
 Using `curl` or any tool which can send http request, send request to endpoints like `http://127.0.0.1:5000` or unix socket `/path/to/socket`,

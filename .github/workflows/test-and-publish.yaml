@@ -2,11 +2,16 @@ on:
   push:
     tags:
       - "v[0-9]+.[0-9]+.[0-9]+"
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
-  build:
-    name: "Build packages"
+  test-and-publish:
+    name: "Test app and publish packages"
     strategy:
       matrix:
         os:
@@ -27,17 +32,30 @@ jobs:
         exclude:
           - aot: "true"
             self-contained: "false"
+
     runs-on: ${{ matrix.os }}
     steps:
       - name: "Fix long path on windows"
         if: matrix.os == 'windows-latest'
         run: "git config --system core.longpaths true"
+
       - name: "Checkout"
         uses: "actions/checkout@v4"
+
       - name: "Setup .NET"
         uses: "actions/setup-dotnet@v4"
         with:
           dotnet-version: ${{ matrix.dotnet }}
+
+      - name: Check whitespace
+        run: dotnet format whitespace --verify-no-changes
+
+      - name: Check style
+        run: dotnet format style --verify-no-changes
+
+      - name: Run mstest
+        run: dotnet test --collect "XPlat Code Coverage"
+
       - name: "Get build environment info"
         id: build-env-info
         shell: bash
@@ -54,11 +72,21 @@ jobs:
           
           echo "rid=$rid" >> "$GITHUB_OUTPUT"
           echo "suffix=$suffix" >> "$GITHUB_OUTPUT"
+
       - name: "Publish binary"
-        run: "dotnet publish E5Renewer/E5Renewer.csproj --runtime ${{ steps.build-env-info.outputs.rid }} ${{ matrix.aot == 'false' && '-p:PublishAot=false' || '' }} --sc ${{ matrix.self-contained }}"
+        run: |
+          dotnet publish E5Renewer/E5Renewer.csproj \
+            --runtime ${{ steps.build-env-info.outputs.rid }} \
+            -p:E5RenewerAot=${{ matrix.aot }} \
+            --sc ${{ matrix.self-contained }}"
+        
       - name: "Create archive"
-        run: "7z a E5Renewer-${{ steps.build-env-info.outputs.suffix }}.7z E5Renewer/bin/Release/net${{ matrix.dotnet }}/${{ steps.build-env-info.outputs.rid }}/publish/*"
+        run: |
+          7z a E5Renewer-${{ steps.build-env-info.outputs.suffix }}.7z \
+            E5Renewer/bin/Release/net${{ matrix.dotnet }}/${{ steps.build-env-info.outputs.rid }}/publish/*
+        
       - name: "Upload archive"
+        if: github.ref_type == 'tag'
         uses: "actions/upload-artifact@v4"
         with:
           name: "E5Renewer-${{ steps.build-env-info.outputs.suffix }}"
@@ -74,6 +102,7 @@ jobs:
     steps:
       - name: "Download archive"
         uses: "actions/download-artifact@v4"
+
       - name: "Create release"
         uses: "softprops/action-gh-release@v2"
         with:

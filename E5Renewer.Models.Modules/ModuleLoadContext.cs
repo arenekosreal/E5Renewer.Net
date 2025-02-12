@@ -3,6 +3,8 @@ using System.Runtime.Loader;
 
 namespace E5Renewer.Models.Modules;
 
+#if ! E5RENEWER_AOT
+
 /// <summary> AssemblyLoadContext for loading modules.</summary>
 public class ModuleLoadContext : AssemblyLoadContext
 {
@@ -38,3 +40,4 @@ public class ModuleLoadContext : AssemblyLoadContext
     }
 }
 
+#endif // ! E5RENEWER_AOT

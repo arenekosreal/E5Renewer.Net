@@ -78,7 +78,7 @@ jobs:
           dotnet publish E5Renewer/E5Renewer.csproj \
             --runtime ${{ steps.build-env-info.outputs.rid }} \
             -p:E5RenewerAot=${{ matrix.aot }} \
-            --sc ${{ matrix.self-contained }}"
+            --sc ${{ matrix.self-contained }}
         
       - name: "Create archive"
         run: |

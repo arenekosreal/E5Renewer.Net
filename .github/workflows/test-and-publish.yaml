@@ -79,12 +79,14 @@ jobs:
             --runtime ${{ steps.build-env-info.outputs.rid }} \
             -p:E5RenewerAot=${{ matrix.aot }} \
             --sc ${{ matrix.self-contained }}
+        shell: bash
         
       - name: "Create archive"
         run: |
           7z a E5Renewer-${{ steps.build-env-info.outputs.suffix }}.7z \
             E5Renewer/bin/Release/net${{ matrix.dotnet }}/${{ steps.build-env-info.outputs.rid }}/publish/*
-        
+        shell: bash
+
       - name: "Upload archive"
         if: github.ref_type == 'tag'
         uses: "actions/upload-artifact@v4"

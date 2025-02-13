@@ -1,6 +1,6 @@
 # MS365 E5 Subscription Renewer
 
-[![Run tests](https://github.com/arenekosreal/E5Renewer.Net/actions/workflows/test.yaml/badge.svg)](https://github.com/arenekosreal/E5Renewer.Net/actions/workflows/test.yaml)
+[![.github/workflows/test-and-publish.yaml](https://github.com/arenekosreal/E5Renewer.Net/actions/workflows/test-and-publish.yaml/badge.svg)](https://github.com/arenekosreal/E5Renewer.Net/actions/workflows/test-and-publish.yaml)
 
 ## What is this
 
